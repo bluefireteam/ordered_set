@@ -30,4 +30,4 @@ pub global run coverage:format_coverage \
   --report-on=lib
 
 echo "Uploading to Coveralls..."
-coveralls-lcov --repo-token="$COVERALLS_REPO_TOKEN" var/lcov.info
+coveralls-lcov var/lcov.info
