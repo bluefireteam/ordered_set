@@ -11,18 +11,18 @@ stages:
 jobs:
   include:
     - stage: format
-      script: ./tool/travis/task.sh dartfmt
+      script: ./tool/task.sh dartfmt
 
     - stage: analyze
-      script: ./tool/travis/task.sh dartanalyzer
+      script: ./tool/task.sh dartanalyzer
 
     - stage: test
-      script: ./tool/travis/task.sh test
+      script: ./tool/task.sh test
 
     - stage: coverage
       install:
         - gem install coveralls-lcov
-      script: ./tool/travis/coverage.sh
+      script: ./tool/coverage.sh
 
 cache:
   directories:
