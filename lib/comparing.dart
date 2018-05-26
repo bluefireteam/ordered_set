@@ -1,6 +1,5 @@
 /// Class with helper methods that allow for easier creation of Comparators.
 class Comparing {
-
   Comparing._();
 
   /// Reverses a given comparator, that is, change it from ascending to descending or vice-versa.
