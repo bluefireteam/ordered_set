@@ -32,13 +32,13 @@ In order to assist the creation of OrderedSet's, there is a Comparing class to e
 
 ```dart
   // sort by name length
-  final people = new OrderedSet(Comparing.on((p) => p.name.length));
+  final people = new OrderedSet<Person>(Comparing.on((p) => p.name.length));
 
   // sort by name desc
-  final people = new OrderedSet(Comparing.reverse(Comparing.on((p) => p.name)));
+  final people = new OrderedSet<Person>(Comparing.reverse(Comparing.on((p) => p.name)));
 
   // sort by role and then by name
-  final people = new OrderedSet(Comparing.join([(p) => p.role, (p) => p.name]));
+  final people = new OrderedSet<Person>(Comparing.join([(p) => p.role, (p) => p.name]));
 ```
 
 ## Contributing
