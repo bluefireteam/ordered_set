@@ -142,13 +142,12 @@ void main() {
       expect(a.toList(), ['aab', 'bab', 'cab']);
     });
 
-    List<String> expected = ['Sunny', 'Klaus', 'Violet'];
-
     test('no comparator test with comparable', () {
       OrderedSet<ComparableObject> a = new OrderedSet();
       expect(a.add(new ComparableObject(12, 'Klaus')), true);
       expect(a.add(new ComparableObject(1, 'Sunny')), true);
       expect(a.add(new ComparableObject(14, 'Violet')), true);
+      List<String> expected = ['Sunny', 'Klaus', 'Violet'];
       expect(a.toList().map((e) => e.name).toList(), expected);
     });
 
@@ -158,6 +157,7 @@ void main() {
       expect(a.add(new ComparableObject(1, 'Sunny')), true);
       expect(a.add(new ComparableObject(12, 'Klaus')), true);
       expect(a.add(new ComparableObject(14, 'Violet')), true);
+      List<String> expected = ['Klaus', 'Sunny', 'Violet'];
       expect(a.toList().map((e) => e.name).toList(), expected);
     });
 
