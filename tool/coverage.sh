@@ -11,7 +11,7 @@ echo "Starting tests..."
 dart \
   --enable-vm-service=$OBS_PORT \
   --pause-isolates-on-exit \
-  test/ordered_set_test.dart &
+  test/all.dart &
 
 # Run the coverage collector to generate the JSON coverage report.
 echo "Collecting coverage..."

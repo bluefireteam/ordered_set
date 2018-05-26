@@ -1,4 +1,5 @@
 import 'package:ordered_set/ordered_set.dart';
+import 'package:ordered_set/comparing.dart';
 
 main() {
   OrderedSet<int> items = new OrderedSet();
@@ -18,6 +19,14 @@ main() {
   a.add(new Person(13, 'Quigley'));
   print(a.toList().map((e) => e.name));
   // Sunny, Klaus, Isadora, Duncan, Quigley, Violet
+
+  // use Comparing for simpler creation:
+  // sort by age desc and then name asc
+  OrderedSet<Person> b =
+      new OrderedSet(Comparing.join([(p) => -p.age, (p) => p.name]));
+  b.addAll(a.toList());
+  print(b.toList().map((e) => e.name));
+  // Violet, Duncan, Isadora, Quigley, Klaus, Sunny
 }
 
 class Person {

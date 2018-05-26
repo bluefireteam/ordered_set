@@ -26,6 +26,21 @@ A simple usage example:
   }
 ```
 
+## Comparing
+
+In order to assist the creation of OrderedSet's, there is a Comparing class to easily create Comparables:
+
+```dart
+  // sort by name length
+  final people = new OrderedSet(Comparing.on((p) => p.name.length));
+
+  // sort by name desc
+  final people = new OrderedSet(Comparing.reverse(Comparing.on((p) => p.name)));
+
+  // sort by role and then by name
+  final people = new OrderedSet(Comparing.join([(p) => p.role, (p) => p.name]));
+```
+
 ## Contributing
 
 All contributions are very welcome! Please feel free to create Issues, help us with PR's or comment your suggestions, feature requests, bugs, et cetera. Give us a star if you liked it!

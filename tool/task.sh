@@ -22,8 +22,8 @@ while (( "$#" )); do
     ;;
   test) echo
     echo -e '\033[1mTASK: test\033[22m'
-    echo -e 'dart test/ordered_set_test.dart'
-    dart test/ordered_set_test.dart || EXIT_CODE=$?
+    echo -e 'dart test/all.dart'
+    dart test/all.dart || EXIT_CODE=$?
     ;;
   *) echo -e "\033[31mUnknown task: '${TASK}'. Error!\033[0m"
     EXIT_CODE=1
