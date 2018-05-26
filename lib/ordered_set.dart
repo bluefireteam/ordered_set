@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 /// A simple implementation for an ordered set for Dart.
-/// 
+///
 /// It accepts a compare function that compares items for their priority.
 /// Unlike [SplayTreeSet], it allows for several different elements with the same priority to be added.
 /// It also implements [Iterable], so you can iterate it in O(n).
@@ -40,7 +40,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   }
 
   /// Gets the current length of this
-  /// 
+  ///
   /// Returns the cached length of this, in O(1).
   /// This is the full length, i.e., the sum of the lengths of each bucket.
   int get length => _length;
@@ -51,14 +51,14 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   }
 
   /// Adds each element of the provided [es] to this and returns the number of elements added.
-  /// 
+  ///
   /// Since elements are always added, this should always return the length of [es].
   int addAll(Iterable<E> es) {
     return es.map((e) => add(e)).where((e) => e).length;
   }
 
   /// Adds the element [e] to this, and returns wether the element was succesfully added or not.
-  /// 
+  ///
   /// You can always add elements, even duplicated elemneted are added, so this always return true.
   bool add(E e) {
     _length++;
@@ -85,12 +85,12 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   }
 
   /// Remove a single element that is equal to [e].
-  /// 
+  ///
   /// If there are multiple elements identical to [e], only the first will be removed.
   /// To remove all, use something like:
-  /// 
+  ///
   ///     set.removeWhere((a) => a == e);
-  /// 
+  ///
   bool remove(E e) {
     List<E> bucket = _backingSet.lookup([e]);
     if (bucket == null) {

@@ -16,7 +16,8 @@ main() {
   a.add(new Person(13, 'Isadora'));
   a.add(new Person(13, 'Duncan'));
   a.add(new Person(13, 'Quigley'));
-  print(a.toList().map((e) => e.name)); // Sunny, Klaus, Isadora, Duncan, Quigley, Violet
+  print(a.toList().map((e) => e.name));
+  // Sunny, Klaus, Isadora, Duncan, Quigley, Violet
 }
 
 class Person {

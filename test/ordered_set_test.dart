@@ -4,7 +4,6 @@ import 'package:ordered_set/ordered_set.dart';
 import 'comparable_object.dart';
 
 void main() {
-
   group('removeWhere', () {
     test('remove single ement', () {
       OrderedSet<int> a = new OrderedSet();
@@ -143,20 +142,23 @@ void main() {
       expect(a.toList(), ['aab', 'bab', 'cab']);
     });
 
+    List<String> expected = ['Sunny', 'Klaus', 'Violet'];
+
     test('no comparator test with comparable', () {
       OrderedSet<ComparableObject> a = new OrderedSet();
       expect(a.add(new ComparableObject(12, 'Klaus')), true);
       expect(a.add(new ComparableObject(1, 'Sunny')), true);
       expect(a.add(new ComparableObject(14, 'Violet')), true);
-      expect(a.toList().map((e) => e.name).toList(), ['Sunny', 'Klaus', 'Violet']);
+      expect(a.toList().map((e) => e.name).toList(), expected);
     });
 
     test('test with custom comparator', () {
-      OrderedSet<ComparableObject> a = new OrderedSet((a, b) => a.name.compareTo(b.name));
+      OrderedSet<ComparableObject> a =
+          new OrderedSet((a, b) => a.name.compareTo(b.name));
       expect(a.add(new ComparableObject(1, 'Sunny')), true);
       expect(a.add(new ComparableObject(12, 'Klaus')), true);
       expect(a.add(new ComparableObject(14, 'Violet')), true);
-      expect(a.toList().map((e) => e.name).toList(), ['Klaus', 'Sunny', 'Violet']);
+      expect(a.toList().map((e) => e.name).toList(), expected);
     });
 
     test('test items with repeated comparables, maintain insertion order', () {
@@ -198,7 +200,8 @@ void main() {
     });
 
     test('with custom comparator, repeated items and removal', () {
-      OrderedSet<ComparableObject> a = new OrderedSet((a, b) => -a.priority.compareTo(b.priority));
+      OrderedSet<ComparableObject> a =
+          new OrderedSet((a, b) => -a.priority.compareTo(b.priority));
       ComparableObject a1, a2, a3, a4, a5, a6;
       expect(a.add(a6 = new ComparableObject(0, '6')), true);
       expect(a.add(a3 = new ComparableObject(1, '3')), true);
