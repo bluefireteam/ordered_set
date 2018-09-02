@@ -99,7 +99,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     bool result = bucket.remove(e);
     if (result) {
       _length--;
-      _backingSet.remove(new List<E>());
+      _backingSet.remove(<E>[]);
     }
     return result;
   }
