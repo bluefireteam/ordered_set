@@ -1,3 +1,7 @@
+## 1.1.5
+
+- Fix coveralls, bump dependencies
+
 ## 1.1.4
 
 - Improve build and fix warnings
