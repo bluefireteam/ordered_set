@@ -1,3 +1,11 @@
+## 1.1.3
+
+- Formatting, removing warnings
+
+## 1.1.2
+
+- Fix for dart2
+
 ## 1.1.0
 
 - Improving documentation via dartdocs
