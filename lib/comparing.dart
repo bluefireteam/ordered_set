@@ -15,7 +15,7 @@ class Comparing {
   /// Join several mappers and compare in order (first the first element, then the second, and so on).
   static Comparator<T> join<T>(List<Comparable Function(T t)> mappers) {
     return (a, b) {
-      int r = on(mappers.first)(a, b);
+      final r = on(mappers.first)(a, b);
       if (r == 0) {
         if (mappers.length == 1) {
           return 0;

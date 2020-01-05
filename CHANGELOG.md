@@ -1,3 +1,7 @@
+## 1.1.4
+
+- Improve build and fix warnings
+
 ## 1.1.3
 
 - Formatting, removing warnings
