@@ -1,7 +1,7 @@
 #!/bin/bash -xe
 
 pub get
-pub global activate coverage ">=0.10.0"
+pub global activate coverage ">=0.13.3+3"
 
 OBS_PORT=9292
 echo "Collecting coverage on port $OBS_PORT..."
@@ -9,6 +9,7 @@ echo "Collecting coverage on port $OBS_PORT..."
 # Start tests in one VM.
 echo "Starting tests..."
 dart \
+  --disable-service-auth-codes \
   --enable-vm-service=$OBS_PORT \
   --pause-isolates-on-exit \
   test/all.dart &
