@@ -19,7 +19,7 @@ A simple usage example:
   import 'package:ordered_set/ordered_set.dart';
 
   main() {
-    OrderedSet<int> items = new OrderedSet();
+    OrderedSet<int> items = OrderedSet();
     items.add(2);
     items.add(1);
     print(items.toList()); // [1, 2]
@@ -32,13 +32,13 @@ In order to assist the creation of OrderedSet's, there is a Comparing class to e
 
 ```dart
   // sort by name length
-  final people = new OrderedSet<Person>(Comparing.on((p) => p.name.length));
+  final people = OrderedSet<Person>(Comparing.on((p) => p.name.length));
 
   // sort by name desc
-  final people = new OrderedSet<Person>(Comparing.reverse(Comparing.on((p) => p.name)));
+  final people = OrderedSet<Person>(Comparing.reverse(Comparing.on((p) => p.name)));
 
   // sort by role and then by name
-  final people = new OrderedSet<Person>(Comparing.join([(p) => p.role, (p) => p.name]));
+  final people = OrderedSet<Person>(Comparing.join([(p) => p.role, (p) => p.name]));
 ```
 
 ## Contributing

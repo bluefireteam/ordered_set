@@ -22,9 +22,9 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   /// Creates a new [OrderedSet] with the given compare function.
   ///
   /// If the [compare] function is omitted, it defaults to [Comparable.compare], and the elements must be comparable.
-  OrderedSet([int compare(E e1, E e2)]) {
+  OrderedSet([int Function(E e1, E e2) compare]) {
     final comparator = compare ?? _defaultCompare<E>();
-    _backingSet = new SplayTreeSet<List<E>>((List<E> l1, List<E> l2) {
+    _backingSet = SplayTreeSet<List<E>>((List<E> l1, List<E> l2) {
       if (l1.isEmpty) {
         if (l2.isEmpty) {
           return 0;
@@ -43,11 +43,12 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   ///
   /// Returns the cached length of this, in O(1).
   /// This is the full length, i.e., the sum of the lengths of each bucket.
+  @override
   int get length => _length;
 
   @override
   Iterator<E> get iterator {
-    return new _OrderedSetIterator<E>(this);
+    return _OrderedSetIterator<E>(this);
   }
 
   /// Adds each element of the provided [es] to this and returns the number of elements added.
@@ -62,7 +63,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   /// You can always add elements, even duplicated elemneted are added, so this always return true.
   bool add(E e) {
     _length++;
-    bool added = _backingSet.add([e]);
+    final added = _backingSet.add([e]);
     if (!added) {
       _backingSet.lookup([e]).add(e);
     }
@@ -71,9 +72,9 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
 
   /// Remove all elements that match the [test] condition, returns the amount of element removed.
   int removeWhere(bool test(E element)) {
-    int prevLength = _length;
+    final prevLength = _length;
     for (List<E> es in _backingSet.toList()) {
-      int removed = es.where(test).length;
+      final removed = es.where(test).length;
       if (removed == es.length) {
         _backingSet.remove(es);
       } else {
@@ -92,11 +93,11 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   ///     set.removeWhere((a) => a == e);
   ///
   bool remove(E e) {
-    List<E> bucket = _backingSet.lookup([e]);
+    final bucket = _backingSet.lookup([e]);
     if (bucket == null) {
       return false;
     }
-    bool result = bucket.remove(e);
+    final result = bucket.remove(e);
     if (result) {
       _length--;
       _backingSet.remove(<E>[]);
