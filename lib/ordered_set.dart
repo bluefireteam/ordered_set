@@ -70,19 +70,21 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     return true;
   }
 
-  /// Remove all elements that match the [test] condition, returns the amount of element removed.
-  int removeWhere(bool Function(E element) test) {
-    final prevLength = _length;
+  /// Remove all elements that match the [test] condition, returns the removed elements
+  Iterable<E> removeWhere(bool Function(E element) test) {
+    List<E> _removed = [];
     for (final es in _backingSet.toList()) {
-      final removed = es.where(test).length;
-      if (removed == es.length) {
+      final removed = es.where(test);
+      _removed.addAll(removed);
+      _length -= removed.length;
+
+      if (removed.length == es.length) {
         _backingSet.remove(es);
       } else {
         es.removeWhere(test);
       }
-      _length -= removed;
     }
-    return prevLength - _length;
+    return _removed;
   }
 
   /// Remove a single element that is equal to [e].
