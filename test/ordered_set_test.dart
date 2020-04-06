@@ -26,7 +26,7 @@ void main() {
       test('remove returns the removed elements', () {
         OrderedSet<int> a = OrderedSet();
         a.addAll([7, 4, 3, 1, 2, 6, 5]);
-        final removed =  a.removeWhere((e) => e <= 2);
+        final removed = a.removeWhere((e) => e <= 2);
         expect(removed.length, 2);
         expect(removed.toList().join(), '12');
       });

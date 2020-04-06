@@ -1,3 +1,7 @@
+## 2.0.0
+
+- Change removeWhere api
+
 ## 1.1.5
 
 - Fix coveralls, bump dependencies
