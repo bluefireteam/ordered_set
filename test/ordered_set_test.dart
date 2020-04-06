@@ -10,7 +10,7 @@ void main() {
         OrderedSet<int> a = OrderedSet();
         expect(a.addAll([7, 4, 3, 1, 2, 6, 5]), 7);
         expect(a.length, 7);
-        expect(a.removeWhere((e) => e == 3), 1);
+        expect(a.removeWhere((e) => e == 3).length, 1);
         expect(a.length, 6);
         expect(a.toList().join(), '124567');
       });
@@ -18,9 +18,17 @@ void main() {
       test('remove with property', () {
         OrderedSet<int> a = OrderedSet();
         expect(a.addAll([7, 4, 3, 1, 2, 6, 5]), 7);
-        expect(a.removeWhere((e) => e % 2 == 1), 4);
+        expect(a.removeWhere((e) => e % 2 == 1).length, 4);
         expect(a.length, 3);
         expect(a.toList().join(), '246');
+      });
+
+      test('remove returns the removed elements', () {
+        OrderedSet<int> a = OrderedSet();
+        a.addAll([7, 4, 3, 1, 2, 6, 5]);
+        final removed =  a.removeWhere((e) => e <= 2);
+        expect(removed.length, 2);
+        expect(removed.toList().join(), '12');
       });
 
       test('remove from same group and different groups', () {
@@ -33,7 +41,7 @@ void main() {
         expect(a.add(ComparableObject(1, 'b3')), true);
         expect(a.add(ComparableObject(2, 'a4')), true);
         expect(a.add(ComparableObject(2, 'b4')), true);
-        expect(a.removeWhere((e) => e.name.startsWith('a')), 4);
+        expect(a.removeWhere((e) => e.name.startsWith('a')).length, 4);
         expect(a.length, 4);
         expect(a.toList().join(), 'b1b2b3b4');
       });
@@ -48,7 +56,7 @@ void main() {
         expect(a.add(ComparableObject(1, 'b3')), true);
         expect(a.add(ComparableObject(2, 'a4')), true);
         expect(a.add(ComparableObject(2, 'b4')), true);
-        expect(a.removeWhere((e) => true), 8);
+        expect(a.removeWhere((e) => true).length, 8);
         expect(a.length, 0);
         expect(a.toList().join(), '');
       });
