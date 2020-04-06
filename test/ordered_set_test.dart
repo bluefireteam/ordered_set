@@ -23,6 +23,14 @@ void main() {
         expect(a.toList().join(), '246');
       });
 
+      test('remove returns the removed elements', () {
+        OrderedSet<int> a = OrderedSet();
+        a.addAll([7, 4, 3, 1, 2, 6, 5]);
+        final removed =  a.removeWhere((e) => e <= 2);
+        expect(removed.length, 2);
+        expect(removed.toList().join(), '12');
+      });
+
       test('remove from same group and different groups', () {
         OrderedSet<ComparableObject> a = OrderedSet();
         expect(a.add(ComparableObject(0, 'a1')), true);
