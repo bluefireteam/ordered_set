@@ -48,7 +48,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
 
   @override
   Iterator<E> get iterator {
-    return _OrderedSetIterator<E>(this);
+    return _backingSet.expand<E>((es) => es).iterator;
   }
 
   /// Adds each element of the provided [es] to this and returns the number of elements added.
@@ -72,19 +72,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
 
   /// Remove all elements that match the [test] condition, returns the removed elements
   Iterable<E> removeWhere(bool Function(E element) test) {
-    List<E> _removed = [];
-    for (final es in _backingSet.toList()) {
-      final removed = es.where(test);
-      _removed.addAll(removed);
-      _length -= removed.length;
-
-      if (removed.length == es.length) {
-        _backingSet.remove(es);
-      } else {
-        es.removeWhere(test);
-      }
-    }
-    return _removed;
+    return this.where(test).toList()..forEach((e) {this.remove(e);});
   }
 
   /// Remove a single element that is equal to [e].
@@ -111,32 +99,5 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   void clear() {
     _backingSet.clear();
     _length = 0;
-  }
-}
-
-class _OrderedSetIterator<E> extends Iterator<E> {
-  OrderedSet<E> orderedSet;
-  Iterator<List<E>> _iterator;
-  int _current;
-
-  _OrderedSetIterator(this.orderedSet) {
-    _iterator = orderedSet._backingSet.iterator;
-    _current = 0;
-  }
-
-  @override
-  E get current => _iterator.current[_current];
-
-  @override
-  bool moveNext() {
-    if (_iterator.current == null) {
-      return _iterator.moveNext();
-    }
-    _current++;
-    if (_current < _iterator.current.length) {
-      return true;
-    }
-    _current = 0;
-    return _iterator.moveNext();
   }
 }
