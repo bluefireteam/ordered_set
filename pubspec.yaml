@@ -1,10 +1,10 @@
 name: ordered_set
 description: A simple implementation of an Ordered Set for Dart that allows multiple items with the same priority.
-version: 2.0.1
+version: 3.0.0-nullsafety.0
 homepage: https://github.com/luanpotter/ordered_set
 
 environment:
-  sdk: '>=2.7.0 <3.0.0'
+  sdk: '>=2.12.0-29.10.beta <3.0.0'
 
 dev_dependencies:
-  test: ^1.9.4
+  test: ^1.16.0-nullsafety
