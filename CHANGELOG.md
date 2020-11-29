@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Simplify implementation of iterator and removeWhere
+
 ## 2.0.0
 
 - Change removeWhere api
