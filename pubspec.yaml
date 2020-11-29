@@ -4,7 +4,7 @@ version: 2.0.1
 homepage: https://github.com/luanpotter/ordered_set
 
 environment:
-  sdk: '>=2.0.0-dev.54.0 <3.0.0'
+  sdk: '>=2.7.0 <3.0.0'
 
 dev_dependencies:
   test: ^1.9.4
