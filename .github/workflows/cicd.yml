@@ -20,6 +20,7 @@ jobs:
         with:
           channel: 'beta'
       - run: echo $PATH
+      - run: ls /opt/hostedtoolcache/flutter/1.26.0-17.6.pre-beta/x64/bin/cache/dart-sdk/bin
       - run: ./scripts/dartdoc.sh
 
   format:
