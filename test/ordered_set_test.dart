@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:test/test.dart';
 import 'package:ordered_set/ordered_set.dart';
 
@@ -98,6 +100,15 @@ void main() {
         expect(a.addAll([4, 3, 3, 2, 2, 2, 1]), 7);
         expect(a.length, 7);
         expect(a.toList().join(), '1222334');
+      });
+
+      test('duplicated item is ok', () {
+        OrderedSet<int> a = OrderedSet();
+        a.add(2);
+        a.add(1);
+        a.add(2);
+        expect(a.length, 3);
+        expect(a.toList().join(), '122');
       });
     });
 
