@@ -19,6 +19,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'beta'
+      - run: echo $PATH
       - run: ./scripts/dartdoc.sh
 
   format:
