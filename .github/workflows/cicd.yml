@@ -19,6 +19,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'beta'
+      - run: flutter pub get # make sure flutter downloads dart for us
       - run: echo $PATH
       - run: ls /opt/hostedtoolcache/flutter/1.26.0-17.6.pre-beta/x64
       - run: ls /opt/hostedtoolcache/flutter/1.26.0-17.6.pre-beta/x64/bin
