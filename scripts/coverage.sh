@@ -11,7 +11,7 @@ dart \
   --disable-service-auth-codes \
   --enable-vm-service=$OBS_PORT \
   --pause-isolates-on-exit \
-  test/all.dart &
+  test &
 
 # Run the coverage collector to generate the JSON coverage report.
 echo "Collecting coverage..."
