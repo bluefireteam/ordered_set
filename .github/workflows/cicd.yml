@@ -19,7 +19,6 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'beta'
-      - run: flutter pub get
       - run: ./scripts/dartdoc.sh
 
   format:
@@ -59,14 +58,13 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'beta'
-      - run: flutter pub get
-      - run: flutter test
+      - run: dart test
 
   coverage:
     needs: [test]
     runs-on: ubuntu-latest
     steps:
-      - run: scripts/coverage.sh
+      - run: ./scripts/coverage.sh
       - uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
