@@ -70,6 +70,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'beta'
+      - run: flutter pub get # make sure flutter downloads dart for us
       - run: ./scripts/coverage.sh
       - uses: coverallsapp/github-action@master
         with:

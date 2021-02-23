@@ -1,7 +1,6 @@
 #!/bin/bash -xe
 
 pub get
-pub global activate coverage ">=0.13.3+3"
 
 OBS_PORT=9292
 echo "Collecting coverage on port $OBS_PORT..."
@@ -29,6 +28,3 @@ pub global run coverage:format_coverage \
   --out=var/lcov.info \
   --packages=.packages \
   --report-on=lib
-
-echo "Uploading to Coveralls..."
-coveralls-lcov var/lcov.info
