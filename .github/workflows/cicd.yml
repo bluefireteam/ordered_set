@@ -63,19 +63,8 @@ jobs:
           channel: 'beta'
       - run: flutter pub get # make sure flutter downloads dart for us
       - run: pub get
-      - run: dart test
-
-  coverage:
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: subosito/flutter-action@v1
+      - run: dart test --coverage .
+      - uses: codecov/codecov-action@v1.0.2
         with:
-          channel: 'beta'
-      - run: flutter pub get # make sure flutter downloads dart for us
-      - run: ./scripts/coverage.sh
-      - uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
   # END TESTING STAGE
