@@ -8,6 +8,7 @@ if [ "$result" != "" ]; then
   echo "$result"
   exit 1
 fi
+
 result=$(dart analyze .)
 if ! echo "$result" | grep -q "No issues found!"; then
   echo "$result"
