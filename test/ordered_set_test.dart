@@ -1,7 +1,5 @@
-import 'dart:math';
-
-import 'package:test/test.dart';
 import 'package:ordered_set/ordered_set.dart';
+import 'package:test/test.dart';
 
 import 'comparable_object.dart';
 
@@ -9,7 +7,7 @@ void main() {
   group('OrderedSet', () {
     group('#removeWhere', () {
       test('remove single ement', () {
-        OrderedSet<int> a = OrderedSet();
+        final a = OrderedSet<int>();
         expect(a.addAll([7, 4, 3, 1, 2, 6, 5]), 7);
         expect(a.length, 7);
         expect(a.removeWhere((e) => e == 3).length, 1);
@@ -18,15 +16,15 @@ void main() {
       });
 
       test('remove with property', () {
-        OrderedSet<int> a = OrderedSet();
+        final a = OrderedSet<int>();
         expect(a.addAll([7, 4, 3, 1, 2, 6, 5]), 7);
-        expect(a.removeWhere((e) => e % 2 == 1).length, 4);
+        expect(a.removeWhere((e) => e.isOdd).length, 4);
         expect(a.length, 3);
         expect(a.toList().join(), '246');
       });
 
       test('remove returns the removed elements', () {
-        OrderedSet<int> a = OrderedSet();
+        final a = OrderedSet<int>();
         a.addAll([7, 4, 3, 1, 2, 6, 5]);
         final removed = a.removeWhere((e) => e <= 2);
         expect(removed.length, 2);
@@ -34,7 +32,7 @@ void main() {
       });
 
       test('remove from same group and different groups', () {
-        OrderedSet<ComparableObject> a = OrderedSet();
+        final a = OrderedSet<ComparableObject>();
         expect(a.add(ComparableObject(0, 'a1')), true);
         expect(a.add(ComparableObject(0, 'a2')), true);
         expect(a.add(ComparableObject(0, 'b1')), true);
@@ -49,7 +47,7 @@ void main() {
       });
 
       test('remove all', () {
-        OrderedSet<ComparableObject> a = OrderedSet();
+        final a = OrderedSet<ComparableObject>();
         expect(a.add(ComparableObject(0, 'a1')), true);
         expect(a.add(ComparableObject(0, 'a2')), true);
         expect(a.add(ComparableObject(0, 'b1')), true);
@@ -66,7 +64,7 @@ void main() {
 
     group('#clear', () {
       test('removes all and updates length', () {
-        OrderedSet<int> a = OrderedSet();
+        final a = OrderedSet<int>();
         expect(a.addAll([1, 2, 3, 4, 5, 6]), 6);
         a.clear();
         expect(a.length, 0);
@@ -76,7 +74,7 @@ void main() {
 
     group('#addAll', () {
       test('maintains order', () {
-        OrderedSet<int> a = OrderedSet();
+        final a = OrderedSet<int>();
         expect(a.length, 0);
         expect(a.addAll([7, 4, 3, 1, 2, 6, 5]), 7);
         expect(a.length, 7);
@@ -84,26 +82,26 @@ void main() {
       });
 
       test('with repeated priority elements', () {
-        OrderedSet<int> a = OrderedSet((a, b) => (a % 2) - (b % 2));
+        final a = OrderedSet<int>((a, b) => (a % 2) - (b % 2));
         expect(a.addAll([7, 4, 3, 1, 2, 6, 5]), 7);
         expect(a.length, 7);
         expect(a.toList().join(), '4267315');
 
-        OrderedSet<int> b = OrderedSet((a, b) => 0);
+        final b = OrderedSet<int>((a, b) => 0);
         expect(b.addAll([7, 4, 3, 1, 2, 6, 5]), 7);
         expect(a.length, 7);
         expect(b.toList().join(), '7431265');
       });
 
       test('with identical elements', () {
-        OrderedSet<int> a = OrderedSet();
+        final a = OrderedSet<int>();
         expect(a.addAll([4, 3, 3, 2, 2, 2, 1]), 7);
         expect(a.length, 7);
         expect(a.toList().join(), '1222334');
       });
 
       test('duplicated item is ok', () {
-        OrderedSet<int> a = OrderedSet();
+        final a = OrderedSet<int>();
         a.add(2);
         a.add(1);
         a.add(2);
@@ -114,7 +112,7 @@ void main() {
 
     group('#length', () {
       test('keeps track of lenth when adding', () {
-        OrderedSet<int> a = OrderedSet();
+        final a = OrderedSet<int>();
         expect(a.add(1), true);
         expect(a.length, 1);
         expect(a.add(2), true);
@@ -124,7 +122,7 @@ void main() {
       });
 
       test('keeps track of lenth when removing', () {
-        OrderedSet<int> a = OrderedSet((a, b) => 0); // no priority
+        final a = OrderedSet<int>((a, b) => 0); // no priority
         expect(a.addAll([1, 2, 3, 4]), 4);
         expect(a.length, 4);
 
@@ -148,14 +146,14 @@ void main() {
 
     group('#add/#remove', () {
       test('no comparator test with int', () {
-        OrderedSet<int> a = OrderedSet();
+        final a = OrderedSet<int>();
         expect(a.add(2), true);
         expect(a.add(1), true);
         expect(a.toList(), [1, 2]);
       });
 
       test('no comparator test with string', () {
-        OrderedSet<String> a = OrderedSet();
+        final a = OrderedSet<String>();
         expect(a.add('aab'), true);
         expect(a.add('cab'), true);
         expect(a.add('bab'), true);
@@ -163,42 +161,45 @@ void main() {
       });
 
       test('no comparator test with comparable', () {
-        OrderedSet<ComparableObject> a = OrderedSet();
+        final a = OrderedSet<ComparableObject>();
         expect(a.add(ComparableObject(12, 'Klaus')), true);
         expect(a.add(ComparableObject(1, 'Sunny')), true);
         expect(a.add(ComparableObject(14, 'Violet')), true);
-        List<String> expected = ['Sunny', 'Klaus', 'Violet'];
+        final expected = ['Sunny', 'Klaus', 'Violet'];
         expect(a.toList().map((e) => e.name).toList(), expected);
       });
 
       test('test with custom comparator', () {
-        OrderedSet<ComparableObject> a =
-            OrderedSet((a, b) => a.name.compareTo(b.name));
+        final a = OrderedSet<ComparableObject>(
+          (a, b) => a.name.compareTo(b.name),
+        );
         expect(a.add(ComparableObject(1, 'Sunny')), true);
         expect(a.add(ComparableObject(12, 'Klaus')), true);
         expect(a.add(ComparableObject(14, 'Violet')), true);
-        List<String> expected = ['Klaus', 'Sunny', 'Violet'];
+        final expected = ['Klaus', 'Sunny', 'Violet'];
         expect(a.toList().map((e) => e.name).toList(), expected);
       });
 
-      test('test items with repeated comparables, maintain insertion order',
-          () {
-        OrderedSet<int> a = OrderedSet<int>((a, b) => (a % 2) - (b % 2));
-        for (int i = 0; i < 10; i++) {
-          expect(a.add(i), true);
-        }
-        expect(a.toList(), [0, 2, 4, 6, 8, 1, 3, 5, 7, 9]);
-      });
+      test(
+        'test items with repeated comparables, maintain insertion order',
+        () {
+          final a = OrderedSet<int>((a, b) => (a % 2) - (b % 2));
+          for (var i = 0; i < 10; i++) {
+            expect(a.add(i), true);
+          }
+          expect(a.toList(), [0, 2, 4, 6, 8, 1, 3, 5, 7, 9]);
+        },
+      );
 
       test('test items with actual duplicated items', () {
-        OrderedSet<int> a = OrderedSet<int>();
+        final a = OrderedSet<int>();
         expect(a.add(1), true);
         expect(a.add(1), true);
         expect(a.toList(), [1, 1]);
       });
 
       test('test remove items', () {
-        OrderedSet<int> a = OrderedSet<int>();
+        final a = OrderedSet<int>();
         expect(a.add(1), true);
         expect(a.add(2), true);
         expect(a.add(0), true);
@@ -208,7 +209,7 @@ void main() {
       });
 
       test('test remove with duplicates', () {
-        OrderedSet<int> a = OrderedSet<int>();
+        final a = OrderedSet<int>();
         expect(a.add(0), true);
         expect(a.add(1), true);
         expect(a.add(1), true);
@@ -221,8 +222,9 @@ void main() {
       });
 
       test('with custom comparator, repeated items and removal', () {
-        OrderedSet<ComparableObject> a =
-            OrderedSet((a, b) => -a.priority.compareTo(b.priority));
+        final a = OrderedSet<ComparableObject>(
+          (a, b) => -a.priority.compareTo(b.priority),
+        );
         ComparableObject a1, a2, a3, a4, a5, a6;
         expect(a.add(a6 = ComparableObject(0, '6')), true);
         expect(a.add(a3 = ComparableObject(1, '3')), true);

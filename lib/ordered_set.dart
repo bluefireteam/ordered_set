@@ -10,9 +10,12 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   int _length;
 
   // gotten from SplayTreeSet, but those are private there
-  static int _dynamicCompare(dynamic a, dynamic b) => Comparable.compare(a, b);
+  static int _dynamicCompare(dynamic a, dynamic b) => Comparable.compare(
+        a as Comparable,
+        b as Comparable,
+      );
   static Comparator<K> _defaultCompare<K>() {
-    Object compare = Comparable.compare;
+    const Object compare = Comparable.compare;
     if (compare is Comparator<K>) {
       return compare;
     }
@@ -55,7 +58,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   ///
   /// Since elements are always added, this should always return the length of [es].
   int addAll(Iterable<E> es) {
-    return es.map((e) => add(e)).where((e) => e).length;
+    return es.map(add).where((e) => e).length;
   }
 
   /// Adds the element [e] to this, and returns wether the element was succesfully added or not.
@@ -72,7 +75,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
 
   /// Remove all elements that match the [test] condition, returns the removed elements
   Iterable<E> removeWhere(bool Function(E element) test) {
-    return this.where(test).toList()..forEach((e) => this.remove(e));
+    return where(test).toList()..forEach(remove);
   }
 
   /// Remove a single element that is equal to [e].
