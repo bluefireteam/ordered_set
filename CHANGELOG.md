@@ -1,3 +1,7 @@
+## 2.0.2
+
+- Improve repository organization
+
 ## 2.0.1
 
 - Simplify implementation of iterator and removeWhere

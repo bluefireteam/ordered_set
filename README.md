@@ -19,7 +19,7 @@ A simple usage example:
   import 'package:ordered_set/ordered_set.dart';
 
   main() {
-    OrderedSet<int> items = OrderedSet();
+    final items = OrderedSet<int>();
     items.add(2);
     items.add(1);
     print(items.toList()); // [1, 2]
