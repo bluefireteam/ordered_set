@@ -8,14 +8,14 @@ void main() {
   group('Comparing', () {
     group('#on', () {
       test('simple comparison test', () {
-        Comparator<String> byLength = Comparing.on((a) => a.length);
+        final byLength = Comparing.on<String>((a) => a.length);
         expect(byLength('a', 'aa'), -1);
         expect(byLength('aaa', 'aa'), 1);
         expect(byLength('aa', 'aa'), 0);
       });
       test('list sorting test', () {
-        String phrase = 'The quick brown fox jumps over the lazy dog';
-        List<String> words = phrase.split(' ');
+        const phrase = 'The quick brown fox jumps over the lazy dog';
+        final words = phrase.split(' ');
         words.sort(Comparing.on((a) => a.length));
         expect(words, [
           'The',
@@ -26,12 +26,11 @@ void main() {
           'lazy',
           'quick',
           'brown',
-          'jumps'
+          'jumps',
         ]);
       });
       test('using complex object', () {
-        OrderedSet<ComparableObject> set =
-            OrderedSet(Comparing.on((o) => o.name));
+        final set = OrderedSet<ComparableObject>(Comparing.on((o) => o.name));
         set.add(ComparableObject(0, 'd'));
         set.add(ComparableObject(1, 'b'));
         set.add(ComparableObject(2, 'a'));
@@ -42,7 +41,7 @@ void main() {
 
     group('#reverse', () {
       test('from regular comparator', () {
-        Comparator<int> intComparator = (a, b) => a - b;
+        int intComparator(int a, int b) => a - b;
         expect(intComparator(0, 10).sign, -1);
 
         expect(Comparing.reverse(intComparator)(0, 10).sign, 1);
@@ -51,9 +50,10 @@ void main() {
       });
 
       test('from on', () {
-        Comparator<ComparableObject> c =
-            Comparing.reverse(Comparing.on((t) => t.name));
-        OrderedSet<ComparableObject> set = OrderedSet(c);
+        final c = Comparing.reverse<ComparableObject>(
+          Comparing.on((t) => t.name),
+        );
+        final set = OrderedSet(c);
         set.add(ComparableObject(0, 'd'));
         set.add(ComparableObject(1, 'b'));
         set.add(ComparableObject(2, 'a'));
@@ -64,11 +64,11 @@ void main() {
 
     group('#join', () {
       test('second level comparison', () {
-        Comparator<ComparableObject> c = Comparing.join([
+        final c = Comparing.join<ComparableObject>([
           (ComparableObject t) => t.priority,
-          (ComparableObject t) => t.name
+          (ComparableObject t) => t.name,
         ]);
-        OrderedSet<ComparableObject> set = OrderedSet(c);
+        final set = OrderedSet(c);
         set.add(ComparableObject(1, 'b'));
         set.add(ComparableObject(0, 'b'));
         set.add(ComparableObject(3, 'a'));

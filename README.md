@@ -1,6 +1,6 @@
 # ordered_set
 
-[![Build Status](https://travis-ci.org/luanpotter/ordered_set.svg?branch=master)](https://travis-ci.org/luanpotter/ordered_set)
+[![Build Status](https://github.com/flame-engine/flame/workflows/cicd/badge.svg?branch=master&event=push)](https://github.com/luanpotter/ordered_set/actions/workflows/cicd.yml)
 [![Coverage Status](https://coveralls.io/repos/github/luanpotter/ordered_set/badge.svg?branch=master)](https://coveralls.io/github/luanpotter/ordered_set?branch=master)
 
 A simple implementation for an ordered set for Dart.
