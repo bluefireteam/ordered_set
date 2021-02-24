@@ -67,7 +67,7 @@ jobs:
       - run: pub get
       - run: dart test --coverage .
       - name: Coverage
-        uses: coverallsapp/github-action@master
+      - uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
   # END TESTING STAGE
