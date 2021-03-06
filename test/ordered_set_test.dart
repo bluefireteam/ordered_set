@@ -1,3 +1,4 @@
+import 'package:ordered_set/comparing.dart';
 import 'package:ordered_set/ordered_set.dart';
 import 'package:test/test.dart';
 
@@ -21,6 +22,21 @@ void main() {
         expect(a.removeWhere((e) => e.isOdd).length, 4);
         expect(a.length, 3);
         expect(a.toList().join(), '246');
+      });
+
+      test('remove when element has changed', () {
+        final a = OrderedSet<ComparableObject>();
+
+        final e1 = ComparableObject(1, 'e1');
+        final e2 = ComparableObject(1, 'e2');
+        final e3 = ComparableObject(2, 'e3');
+        final e4 = ComparableObject(2, 'e4');
+
+        a.addAll([e1, e2, e3, e4]);
+        e1.priority = 2;
+        // no rebalance! note that this is a broken state until rebalance is called
+        expect(a.remove(e1), true);
+        expect(a.toList().join(), 'e2e3e4');
       });
 
       test('remove returns the removed elements', () {
@@ -260,6 +276,33 @@ void main() {
         expect(a.toList().join(), '*3*');
         expect(a.remove(a3), true);
         expect(a.toList().join(), '**');
+      });
+    });
+
+    group('rebalancing', () {
+      test('rebalanceWhere and rebalanceAll', () {
+        final orderedSet = OrderedSet<ComparableObject>(
+          Comparing.on((e) => e.priority),
+        );
+
+        final a = ComparableObject(0, 'a');
+        final b = ComparableObject(1, 'b');
+        final c = ComparableObject(2, 'c');
+        final d = ComparableObject(3, 'd');
+
+        orderedSet.addAll([d, b, a, c]);
+        expect(orderedSet.toList().join(), 'abcd');
+
+        a.priority = 4;
+        expect(orderedSet.toList().join(), 'abcd');
+        orderedSet.rebalanceWhere((e) => identical(e, a));
+        expect(orderedSet.toList().join(), 'bcda');
+
+        b.priority = 5;
+        c.priority = -1;
+        expect(orderedSet.toList().join(), 'bcda');
+        orderedSet.rebalanceAll();
+        expect(orderedSet.toList().join(), 'cdab');
       });
     });
   });

@@ -9,7 +9,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   SplayTreeSet<List<E>> _backingSet;
   int _length;
 
-  // gotten from SplayTreeSet, but those are private there
+  // Copied from SplayTreeSet, but those are private there
   static int _dynamicCompare(dynamic a, dynamic b) => Comparable.compare(
         a as Comparable,
         b as Comparable,
@@ -42,7 +42,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     _length = 0;
   }
 
-  /// Gets the current length of this
+  /// Gets the current length of this.
   ///
   /// Returns the cached length of this, in O(1).
   /// This is the full length, i.e., the sum of the lengths of each bucket.
@@ -73,7 +73,30 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     return true;
   }
 
-  /// Remove all elements that match the [test] condition, returns the removed elements
+  /// Allows you to rebalance the whole tree. If you are dealing with non-deterministic
+  /// compare functions, you probably need to consider rebalancing.
+  /// If the result of the priority function for some elements changes, rebalancing is needed.
+  /// In general be careful with using comparing functions that can change. If only a few
+  /// known elements need rebalancing, you can use [rebalanceWhere].
+  /// Note: rebalancing is **not** stable.
+  void rebalanceAll() {
+    final elements = toList();
+    clear();
+    addAll(elements);
+  }
+
+  /// Allows you to rebalance only a portion of the tree. If you are dealing with non-deterministic
+  /// compare functions, you probably need to consider rebalancing.
+  /// If the priority function changed for certain known elements but not all,
+  /// you can use this instead of [rebalanceAll].
+  /// In general be careful with using comparing functions that can change.
+  /// Note: rebalancing is **not** stable.
+  void rebalanceWhere(bool Function(E element) test) {
+    final elements = removeWhere(test).toList();
+    addAll(elements);
+  }
+
+  /// Remove all elements that match the [test] condition; returns the removed elements
   Iterable<E> removeWhere(bool Function(E element) test) {
     return where(test).toList()..forEach(remove);
   }
@@ -86,7 +109,17 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   ///     set.removeWhere((a) => a == e);
   ///
   bool remove(E e) {
-    final bucket = _backingSet.lookup([e]);
+    var bucket = _backingSet.lookup([e]);
+    if (bucket == null || !bucket.contains(e)) {
+      // We need a fallback in case [e] has changed and it's no longer found by lookup.
+      // Note: changing priorities will leave the splay set on an unknown state; other methods might not work.
+      // You must call rebalance to make sure the state is consistent.
+      // This is just for convenient usage by the rebalancing method itself.
+      bucket = _backingSet.firstWhere(
+        (bucket) => bucket.any((element) => identical(element, e)),
+        orElse: () => null,
+      );
+    }
     if (bucket == null) {
       return false;
     }
