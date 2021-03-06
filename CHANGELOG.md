@@ -1,3 +1,7 @@
+## [next]
+
+- Add methods for rebalancing
+
 ## 2.0.2
 
 - Improve repository organization
