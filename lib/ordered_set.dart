@@ -115,10 +115,11 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
       // Note: changing priorities will leave the splay set on an unknown state; other methods might not work.
       // You must call rebalance to make sure the state is consistent.
       // This is just for convenient usage by the rebalancing method itself.
-      bucket = _backingSet.firstWhere(
-        (bucket) => bucket.any((element) => identical(element, e)),
-        orElse: () => null,
-      );
+      final possibleBuckets = _backingSet
+          .where((bucket) => bucket.any((element) => identical(element, e)));
+      if (possibleBuckets.isNotEmpty) {
+        bucket = possibleBuckets.first;
+      }
     }
     if (bucket == null) {
       return false;
