@@ -1,6 +1,7 @@
-## 3.0.0-nullsafety.0
+## 3.0.0
 
 - Add null safety for this package
+- Add methods for rebalancing
 
 ## 2.0.2
 
