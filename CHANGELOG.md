@@ -1,3 +1,7 @@
+## 3.0.0-nullsafety.0
+
+- Add null safety for this package
+
 ## 2.0.2
 
 - Improve repository organization
