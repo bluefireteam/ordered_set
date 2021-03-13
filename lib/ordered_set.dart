@@ -6,8 +6,8 @@ import 'dart:collection';
 /// Unlike [SplayTreeSet], it allows for several different elements with the same priority to be added.
 /// It also implements [Iterable], so you can iterate it in O(n).
 class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
-  SplayTreeSet<List<E>> _backingSet;
-  int _length;
+  late SplayTreeSet<List<E>> _backingSet;
+  late int _length;
 
   // Copied from SplayTreeSet, but those are private there
   static int _dynamicCompare(dynamic a, dynamic b) => Comparable.compare(
@@ -25,7 +25,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   /// Creates a new [OrderedSet] with the given compare function.
   ///
   /// If the [compare] function is omitted, it defaults to [Comparable.compare], and the elements must be comparable.
-  OrderedSet([int Function(E e1, E e2) compare]) {
+  OrderedSet([int Function(E e1, E e2)? compare]) {
     final comparator = compare ?? _defaultCompare<E>();
     _backingSet = SplayTreeSet<List<E>>((List<E> l1, List<E> l2) {
       if (l1.isEmpty) {
@@ -68,7 +68,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     _length++;
     final added = _backingSet.add([e]);
     if (!added) {
-      _backingSet.lookup([e]).add(e);
+      _backingSet.lookup([e])!.add(e);
     }
     return true;
   }
