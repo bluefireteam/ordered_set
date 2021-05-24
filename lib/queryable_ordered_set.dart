@@ -10,7 +10,7 @@ class _CacheEntry<C, T> {
   }
 }
 
-/// This is an implementation of QueryableOrderedSet that allows you to more
+/// This is an implementation of [OrderedSet] that allows you to more
 /// efficiently [query] the list.
 ///
 /// You can [register] a set of queries, i.e., predefined sub-types, whose
