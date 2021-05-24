@@ -43,12 +43,6 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
   }
 
   @override
-  Iterable<T> removeWhere(bool Function(T element) test) {
-    _cache.values.forEach((v) => v.data.removeWhere(test));
-    return super.removeWhere(test);
-  }
-
-  @override
   bool remove(T e) {
     _cache.values.forEach((v) => v.data.remove(e));
     return super.remove(e);

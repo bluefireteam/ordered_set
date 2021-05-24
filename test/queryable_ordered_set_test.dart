@@ -21,7 +21,17 @@ class Cod extends Fish {}
 void main() {
   group('QueryableOrderedSet', () {
     group('#add and #query', () {
-      test('query after registering', () {
+      test('registration is mandatory', () {
+        final orderedSet = QueryableOrderedSet<Animal>(
+          Comparing.on((e) => e.name),
+        );
+
+        expect(
+          () => orderedSet.query<Bird>(),
+          throwsA('Cannot query unregistered query Bird'),
+        );
+      });
+      test('#add after #register', () {
         final dog = Dog()..name = 'Joey';
         final bird = Bird()..name = 'Louise';
 
@@ -35,9 +45,190 @@ void main() {
         orderedSet.add(dog);
         orderedSet.add(bird);
 
-        expect(orderedSet.query<Animal>(), containsAll(<Animal>[dog, bird]));
-        expect(orderedSet.query<Dog>(), containsAll(<Dog>[dog]));
-        expect(orderedSet.query<Bird>(), containsAll(<Bird>[bird]));
+        expect(
+          orderedSet.query<Animal>(),
+          unorderedMatches(<Animal>[dog, bird]),
+        );
+        expect(orderedSet.query<Dog>(), unorderedMatches(<Dog>[dog]));
+        expect(orderedSet.query<Bird>(), unorderedMatches(<Bird>[bird]));
+      });
+      test('#register after #add', () {
+        final dog = Dog()..name = 'Joey';
+        final bird = Bird()..name = 'Louise';
+
+        final orderedSet = QueryableOrderedSet<Animal>(
+          Comparing.on((e) => e.name),
+        );
+
+        orderedSet.add(dog);
+        orderedSet.add(bird);
+
+        orderedSet.register<Animal>();
+        orderedSet.register<Dog>();
+        orderedSet.register<Bird>();
+
+        expect(
+          orderedSet.query<Animal>(),
+          unorderedMatches(<Animal>[dog, bird]),
+        );
+        expect(orderedSet.query<Dog>(), unorderedMatches(<Dog>[dog]));
+        expect(orderedSet.query<Bird>(), unorderedMatches(<Bird>[bird]));
+      });
+      test('complex hierarchy', () {
+        final dog = Dog()..name = 'Joey';
+        final fish = Fish()..name = 'Abigail';
+        final cod = Cod()..name = 'Leroy';
+
+        final orderedSet = QueryableOrderedSet<Animal>(
+          Comparing.on((e) => e.name),
+        );
+
+        orderedSet.register<Animal>();
+
+        orderedSet.add(dog);
+
+        orderedSet.register<Mammal>();
+
+        orderedSet.add(fish);
+
+        orderedSet.register<Dog>();
+
+        orderedSet.add(cod);
+
+        orderedSet.register<Fish>();
+        orderedSet.register<Cod>();
+
+        expect(
+          orderedSet.query<Animal>(),
+          unorderedMatches(<Animal>[dog, fish, cod]),
+        );
+        expect(orderedSet.query<Mammal>(), unorderedMatches(<Mammal>[dog]));
+        expect(orderedSet.query<Dog>(), unorderedMatches(<Dog>[dog]));
+
+        expect(orderedSet.query<Fish>(), unorderedMatches(<Fish>[fish, cod]));
+        expect(orderedSet.query<Cod>(), unorderedMatches(<Cod>[cod]));
+      });
+      test('#remove', () {
+        final dog = Dog()..name = 'Joey';
+        final bird = Bird()..name = 'Louise';
+
+        final orderedSet = QueryableOrderedSet<Animal>(
+          Comparing.on((e) => e.name),
+        );
+        orderedSet.register<Animal>();
+        orderedSet.register<Dog>();
+        orderedSet.register<Bird>();
+
+        orderedSet.add(dog);
+        orderedSet.add(bird);
+
+        orderedSet.remove(dog);
+
+        expect(orderedSet.query<Animal>(), unorderedMatches(<Animal>[bird]));
+        expect(orderedSet.query<Dog>(), unorderedMatches(<Dog>[]));
+        expect(orderedSet.query<Bird>(), unorderedMatches(<Bird>[bird]));
+
+        orderedSet.remove(bird);
+
+        expect(orderedSet.query<Animal>(), unorderedMatches(<Animal>[]));
+        expect(orderedSet.query<Dog>(), unorderedMatches(<Dog>[]));
+        expect(orderedSet.query<Bird>(), unorderedMatches(<Bird>[]));
+      });
+      test('#removeWhere', () {
+        final dog1 = Dog()..name = 'Joey';
+        final dog2 = Dog()..name = 'Thomas';
+        final bird1 = Bird()..name = 'Louise';
+        final bird2 = Bird()..name = 'Sally';
+
+        final orderedSet = QueryableOrderedSet<Animal>(
+          Comparing.on((e) => e.name),
+        );
+        orderedSet.register<Animal>();
+        orderedSet.register<Mammal>();
+        orderedSet.register<Dog>();
+        orderedSet.register<Bird>();
+
+        orderedSet.add(dog1);
+        orderedSet.add(dog2);
+        orderedSet.add(bird1);
+        orderedSet.add(bird2);
+
+        expect(
+          orderedSet.query<Animal>(),
+          unorderedMatches(<Animal>[dog1, dog2, bird1, bird2]),
+        );
+        expect(
+          orderedSet.query<Mammal>(),
+          unorderedMatches(<Mammal>[dog1, dog2]),
+        );
+        expect(
+          orderedSet.query<Dog>(),
+          unorderedMatches(<Dog>[dog1, dog2]),
+        );
+        expect(
+          orderedSet.query<Bird>(),
+          unorderedMatches(<Bird>[bird1, bird2]),
+        );
+
+        orderedSet.removeWhere((e) => e.name.endsWith('y')); // Joey and Sally
+
+        expect(
+          orderedSet.query<Animal>(),
+          unorderedMatches(<Animal>[dog2, bird1]),
+        );
+        expect(
+          orderedSet.query<Mammal>(),
+          unorderedMatches(<Mammal>[dog2]),
+        );
+        expect(
+          orderedSet.query<Dog>(),
+          unorderedMatches(<Dog>[dog2]),
+        );
+        expect(
+          orderedSet.query<Bird>(),
+          unorderedMatches(<Bird>[bird1]),
+        );
+
+        orderedSet.removeWhere((e) => e is Dog); // Thomas
+
+        expect(orderedSet.query<Animal>(), unorderedMatches(<Animal>[bird1]));
+        expect(orderedSet.query<Mammal>(), unorderedMatches(<Mammal>[]));
+        expect(orderedSet.query<Dog>(), unorderedMatches(<Dog>[]));
+        expect(orderedSet.query<Bird>(), unorderedMatches(<Bird>[bird1]));
+
+        orderedSet.removeWhere((e) => true); // Louise
+
+        expect(orderedSet.query<Animal>(), unorderedMatches(<Animal>[]));
+        expect(orderedSet.query<Mammal>(), unorderedMatches(<Mammal>[]));
+        expect(orderedSet.query<Dog>(), unorderedMatches(<Dog>[]));
+        expect(orderedSet.query<Bird>(), unorderedMatches(<Bird>[]));
+      });
+      test('#clear', () {
+        final dog1 = Dog()..name = 'Joey';
+        final dog2 = Dog()..name = 'Thomas';
+        final bird1 = Bird()..name = 'Louise';
+        final bird2 = Bird()..name = 'Sally';
+
+        final orderedSet = QueryableOrderedSet<Animal>(
+          Comparing.on((e) => e.name),
+        );
+        orderedSet.register<Animal>();
+        orderedSet.register<Mammal>();
+        orderedSet.register<Dog>();
+        orderedSet.register<Bird>();
+
+        orderedSet.add(dog1);
+        orderedSet.add(dog2);
+        orderedSet.add(bird1);
+        orderedSet.add(bird2);
+
+        orderedSet.clear();
+
+        expect(orderedSet.query<Animal>(), unorderedMatches(<Animal>[]));
+        expect(orderedSet.query<Mammal>(), unorderedMatches(<Mammal>[]));
+        expect(orderedSet.query<Dog>(), unorderedMatches(<Dog>[]));
+        expect(orderedSet.query<Bird>(), unorderedMatches(<Bird>[]));
+        expect(orderedSet.toList(), isEmpty);
       });
     });
   });
