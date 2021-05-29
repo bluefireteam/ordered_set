@@ -1,3 +1,7 @@
+## 3.1.0
+
+- Add QueryableOrderedSet
+
 ## 3.0.0
 
 - Add null safety for this package
