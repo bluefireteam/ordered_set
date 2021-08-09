@@ -34,6 +34,7 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
   QueryableOrderedSet([int Function(T e1, T e2)? compare]) : super(compare);
 
   /// Adds a new cache for a subtype [C] of [T], allowing you to call [query].
+  /// If the cache already exists this operation is a no-op.
   ///
   /// If the set is not empty, the current elements will be re-sorted.
   ///
@@ -41,6 +42,9 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
   /// your application to avoid recomputing the existing elements upon
   /// registration.
   void register<C extends T>() {
+    if (isRegistered<C>()) {
+      return;
+    }
     _cache[C] = _CacheEntry<C, T>(
       data: _filter<C>(),
     );
@@ -64,6 +68,9 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
     }
     return result.data as List<C>;
   }
+
+  /// Whether type [C] is registered as a cache
+  bool isRegistered<C>() => _cache.containsKey(C);
 
   @override
   bool add(T t) {
