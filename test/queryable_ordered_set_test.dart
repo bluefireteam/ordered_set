@@ -230,6 +230,30 @@ void main() {
         expect(orderedSet.query<Bird>(), unorderedMatches(<Bird>[]));
         expect(orderedSet.toList(), isEmpty);
       });
+      test('#isRegistered', () {
+        final orderedSet = QueryableOrderedSet<Animal>(
+          Comparing.on((e) => e.name),
+        );
+        // No caches should be registered on a clean set
+        expect(orderedSet.isRegistered<Animal>(), false);
+        expect(orderedSet.isRegistered<Mammal>(), false);
+        orderedSet.register<Animal>();
+        // The Animal cache should report as registered after it has been
+        // registered
+        expect(orderedSet.isRegistered<Animal>(), true);
+        orderedSet.register<Mammal>();
+        // The Mammal cache should report as registered after it has been
+        // registered
+        expect(orderedSet.isRegistered<Mammal>(), true);
+        // The Animal cache should still be reported as registered after another
+        // cache has been registered
+        expect(orderedSet.isRegistered<Animal>(), true);
+        orderedSet.register<Animal>();
+        // Both caches should still be reported as registered after a cache has
+        // been re-registered (no-op)
+        expect(orderedSet.isRegistered<Animal>(), true);
+        expect(orderedSet.isRegistered<Mammal>(), true);
+      });
     });
   });
 }
