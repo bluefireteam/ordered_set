@@ -238,6 +238,8 @@ void main() {
         expect(orderedSet.isRegistered<Animal>(), false);
         expect(orderedSet.isRegistered<Mammal>(), false);
         orderedSet.register<Animal>();
+        // It shouldn't return true for a subclass of a registered cache
+        expect(orderedSet.isRegistered<Mammal>(), false);
         // The Animal cache should report as registered after it has been
         // registered
         expect(orderedSet.isRegistered<Animal>(), true);
@@ -254,7 +256,6 @@ void main() {
         expect(orderedSet.isRegistered<Animal>(), true);
         expect(orderedSet.isRegistered<Mammal>(), true);
         // A call to isRegistered without a type should always be false
-        expect(orderedSet.isRegistered(), false);
       });
     });
   });
