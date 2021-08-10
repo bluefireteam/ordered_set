@@ -253,6 +253,8 @@ void main() {
         // been re-registered (no-op)
         expect(orderedSet.isRegistered<Animal>(), true);
         expect(orderedSet.isRegistered<Mammal>(), true);
+        // A call to isRegistered without a type should always be false
+        expect(orderedSet.isRegistered(), false);
       });
     });
   });
