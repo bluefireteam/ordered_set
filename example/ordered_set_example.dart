@@ -1,5 +1,5 @@
-import 'package:ordered_set/ordered_set.dart';
 import 'package:ordered_set/comparing.dart';
+import 'package:ordered_set/ordered_set.dart';
 
 void main() {
   final items = OrderedSet<int>();
