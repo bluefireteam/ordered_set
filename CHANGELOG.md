@@ -1,3 +1,7 @@
+## [next]
+
+- Add `Comparing#mapper`
+
 ## 3.2.0
 
 - Change `QueryableOrderedSet.register` to be no-op if type is already registered
