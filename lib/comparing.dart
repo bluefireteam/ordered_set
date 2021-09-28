@@ -14,6 +14,7 @@ class Comparing {
 
   /// Use if you already have a custom comparator you wish to use but your list needs some mapping to get to the
   /// comparator's type.
+  /// I.e., creates a Comparator<V> given a Comparator<T> and a mapper V -> T.
   static Comparator<V> mapping<T, V>(
     Comparator<T> comparator,
     T Function(V v) mapper,
