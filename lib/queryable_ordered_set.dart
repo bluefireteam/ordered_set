@@ -28,10 +28,19 @@ class _CacheEntry<C, T> {
 /// find a handful of elements, specially if this is done every tick, you
 /// can use this class, that pays a small O(number of registers) cost on [add],
 /// but lets you find (specific) subsets at O(0).
+///
+/// Note that you can change [strictMode] to allow for querying for unregistered
+/// types; if you do so, the registration cost is payed on the first query.
 class QueryableOrderedSet<T> extends OrderedSet<T> {
+  /// Controls whether running an unregistered query throws an error or
+  /// performs a just-in-time filtering.
+  final bool strictMode;
   final Map<Type, _CacheEntry<T, T>> _cache = {};
 
-  QueryableOrderedSet([int Function(T e1, T e2)? compare]) : super(compare);
+  QueryableOrderedSet({
+    int Function(T e1, T e2)? comparator,
+    this.strictMode = true,
+  }) : super(comparator);
 
   /// Adds a new cache for a subtype [C] of [T], allowing you to call [query].
   /// If the cache already exists this operation is a no-op.
@@ -64,7 +73,12 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
   List<C> query<C extends T>() {
     final result = _cache[C];
     if (result == null) {
-      throw 'Cannot query unregistered query $C';
+      if (strictMode) {
+        throw 'Cannot query unregistered query $C';
+      } else {
+        register<C>();
+        return query<C>();
+      }
     }
     return result.data as List<C>;
   }

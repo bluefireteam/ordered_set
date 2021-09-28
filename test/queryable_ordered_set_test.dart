@@ -21,9 +21,9 @@ class Cod extends Fish {}
 void main() {
   group('QueryableOrderedSet', () {
     group('#add and #query', () {
-      test('registration is mandatory', () {
+      test('registration is mandatory on strict mode', () {
         final orderedSet = QueryableOrderedSet<Animal>(
-          Comparing.on((e) => e.name),
+          comparator: Comparing.on((e) => e.name),
         );
 
         expect(
@@ -31,12 +31,33 @@ void main() {
           throwsA('Cannot query unregistered query Bird'),
         );
       });
+      test('registration is optional with strict mode = false', () {
+        final orderedSet = QueryableOrderedSet<Animal>(
+          comparator: Comparing.on((e) => e.name),
+          strictMode: false,
+        );
+        final bird = Bird()..name = 'Louise';
+        final cod = Cod()..name = 'Leroy';
+        orderedSet.addAll([bird, cod]);
+
+        orderedSet.register<Cod>();
+        expect(orderedSet.isRegistered<Cod>(), isTrue);
+        expect(orderedSet.isRegistered<Bird>(), isFalse);
+
+        expect(orderedSet.query<Cod>(), unorderedMatches(<Cod>[cod]));
+        expect(orderedSet.isRegistered<Cod>(), isTrue);
+        expect(orderedSet.isRegistered<Bird>(), isFalse);
+
+        expect(orderedSet.query<Bird>(), unorderedMatches(<Bird>[bird]));
+        expect(orderedSet.isRegistered<Cod>(), isTrue);
+        expect(orderedSet.isRegistered<Bird>(), isTrue);
+      });
       test('#add after #register', () {
         final dog = Dog()..name = 'Joey';
         final bird = Bird()..name = 'Louise';
 
         final orderedSet = QueryableOrderedSet<Animal>(
-          Comparing.on((e) => e.name),
+          comparator: Comparing.on((e) => e.name),
         );
         orderedSet.register<Animal>();
         orderedSet.register<Dog>();
@@ -57,7 +78,7 @@ void main() {
         final bird = Bird()..name = 'Louise';
 
         final orderedSet = QueryableOrderedSet<Animal>(
-          Comparing.on((e) => e.name),
+          comparator: Comparing.on((e) => e.name),
         );
 
         orderedSet.add(dog);
@@ -80,7 +101,7 @@ void main() {
         final cod = Cod()..name = 'Leroy';
 
         final orderedSet = QueryableOrderedSet<Animal>(
-          Comparing.on((e) => e.name),
+          comparator: Comparing.on((e) => e.name),
         );
 
         orderedSet.register<Animal>();
@@ -113,7 +134,7 @@ void main() {
         final bird = Bird()..name = 'Louise';
 
         final orderedSet = QueryableOrderedSet<Animal>(
-          Comparing.on((e) => e.name),
+          comparator: Comparing.on((e) => e.name),
         );
         orderedSet.register<Animal>();
         orderedSet.register<Dog>();
@@ -141,7 +162,7 @@ void main() {
         final bird2 = Bird()..name = 'Sally';
 
         final orderedSet = QueryableOrderedSet<Animal>(
-          Comparing.on((e) => e.name),
+          comparator: Comparing.on((e) => e.name),
         );
         orderedSet.register<Animal>();
         orderedSet.register<Mammal>();
@@ -210,7 +231,7 @@ void main() {
         final bird2 = Bird()..name = 'Sally';
 
         final orderedSet = QueryableOrderedSet<Animal>(
-          Comparing.on((e) => e.name),
+          comparator: Comparing.on((e) => e.name),
         );
         orderedSet.register<Animal>();
         orderedSet.register<Mammal>();
@@ -232,7 +253,7 @@ void main() {
       });
       test('#isRegistered', () {
         final orderedSet = QueryableOrderedSet<Animal>(
-          Comparing.on((e) => e.name),
+          comparator: Comparing.on((e) => e.name),
         );
         // No caches should be registered on a clean set
         expect(orderedSet.isRegistered<Animal>(), false);
