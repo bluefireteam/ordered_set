@@ -2,9 +2,10 @@ import 'dart:collection';
 
 /// A simple implementation for an ordered set for Dart.
 ///
-/// It accepts a compare function that compares items for their priority.
-/// Unlike [SplayTreeSet], it allows for several different elements with the same priority to be added.
-/// It also implements [Iterable], so you can iterate it in O(n).
+/// It accepts a compare function that compares items for their priority. Unlike
+/// [SplayTreeSet], it allows for several different elements with the same
+/// priority to be added. It also implements [Iterable], so you can iterate it
+/// in O(n).
 class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   late SplayTreeSet<List<E>> _backingSet;
   late int _length;
@@ -24,7 +25,8 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
 
   /// Creates a new [OrderedSet] with the given compare function.
   ///
-  /// If the [compare] function is omitted, it defaults to [Comparable.compare], and the elements must be comparable.
+  /// If the [compare] function is omitted, it defaults to [Comparable.compare],
+  /// and the elements must be comparable.
   OrderedSet([int Function(E e1, E e2)? compare]) {
     final comparator = compare ?? _defaultCompare<E>();
     _backingSet = SplayTreeSet<List<E>>((List<E> l1, List<E> l2) {
@@ -44,8 +46,8 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
 
   /// Gets the current length of this.
   ///
-  /// Returns the cached length of this, in O(1).
-  /// This is the full length, i.e., the sum of the lengths of each bucket.
+  /// Returns the cached length of this, in O(1). This is the full length, i.e.,
+  /// the sum of the lengths of each bucket.
   @override
   int get length => _length;
 
@@ -54,16 +56,20 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     return _backingSet.expand<E>((es) => es).iterator;
   }
 
-  /// Adds each element of the provided [es] to this and returns the number of elements added.
+  /// Adds each element of the provided [es] to this and returns the number of
+  /// elements added.
   ///
-  /// Since elements are always added, this should always return the length of [es].
+  /// Since elements are always added, this should always return the length of
+  /// [es].
   int addAll(Iterable<E> es) {
     return es.map(add).where((e) => e).length;
   }
 
-  /// Adds the element [e] to this, and returns wether the element was succesfully added or not.
+  /// Adds the element [e] to this, and returns wether the element was
+  /// succesfully added or not.
   ///
-  /// You can always add elements, even duplicated elemneted are added, so this always return true.
+  /// You can always add elements, even duplicated elemneted are added, so this
+  /// always return true.
   bool add(E e) {
     _length++;
     final added = _backingSet.add([e]);
@@ -73,11 +79,14 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     return true;
   }
 
-  /// Allows you to rebalance the whole tree. If you are dealing with non-deterministic
-  /// compare functions, you probably need to consider rebalancing.
-  /// If the result of the priority function for some elements changes, rebalancing is needed.
-  /// In general be careful with using comparing functions that can change. If only a few
-  /// known elements need rebalancing, you can use [rebalanceWhere].
+  /// Allows you to rebalance the whole tree. If you are dealing with
+  /// non-deterministic compare functions, you probably need to consider
+  /// rebalancing.
+  /// If the result of the priority function for some elements
+  /// changes, rebalancing is needed.
+  /// In general, be careful with using comparing functions that can change.
+  /// If only a few known elements need rebalancing, you can use
+  /// [rebalanceWhere].
   /// Note: rebalancing is **not** stable.
   void rebalanceAll() {
     final elements = toList();
@@ -85,8 +94,9 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     addAll(elements);
   }
 
-  /// Allows you to rebalance only a portion of the tree. If you are dealing with non-deterministic
-  /// compare functions, you probably need to consider rebalancing.
+  /// Allows you to rebalance only a portion of the tree. If you are dealing
+  /// with non-deterministic compare functions, you probably need to consider
+  /// rebalancing.
   /// If the priority function changed for certain known elements but not all,
   /// you can use this instead of [rebalanceAll].
   /// In general be careful with using comparing functions that can change.
@@ -96,25 +106,27 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     addAll(elements);
   }
 
-  /// Remove all elements that match the [test] condition; returns the removed elements
+  /// Remove all elements that match the [test] condition; returns the removed
+  /// elements
   Iterable<E> removeWhere(bool Function(E element) test) {
     return where(test).toList()..forEach(remove);
   }
 
   /// Remove a single element that is equal to [e].
   ///
-  /// If there are multiple elements identical to [e], only the first will be removed.
-  /// To remove all, use something like:
+  /// If there are multiple elements identical to [e], only the first will be
+  /// removed. To remove all, use something like:
   ///
   ///     set.removeWhere((a) => a == e);
   ///
   bool remove(E e) {
     var bucket = _backingSet.lookup([e]);
     if (bucket == null || !bucket.contains(e)) {
-      // We need a fallback in case [e] has changed and it's no longer found by lookup.
-      // Note: changing priorities will leave the splay set on an unknown state; other methods might not work.
-      // You must call rebalance to make sure the state is consistent.
-      // This is just for convenient usage by the rebalancing method itself.
+      // We need a fallback in case [e] has changed and it's no longer found by
+      // lookup. Note: changing priorities will leave the splay set on an
+      // unknown state; other methods might not work. You must call rebalance to
+      // make sure the state is consistent. This is just for convenient usage by
+      // the rebalancing method itself.
       final possibleBuckets = _backingSet
           .where((bucket) => bucket.any((element) => identical(element, e)));
       if (possibleBuckets.isNotEmpty) {

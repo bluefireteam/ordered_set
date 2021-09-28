@@ -84,5 +84,30 @@ void main() {
         );
       });
     });
+
+    group('#mapping', () {
+      test('can compose existing comparator to a different type', () {
+        final existingComparator = Comparing.join<int>([
+          (int i) => i.isNegative ? 0 : 1,
+          (int i) => i > 20 ? 0 : 1,
+          (int i) => i.isEven ? 0 : 1,
+          (int i) => i,
+        ]);
+        final integers = [-5, -3, -1, 0, 1, 2, 4, 5, 6, 10, 30, 31, 40, 43];
+        const expected = [-5, -3, -1, 30, 40, 31, 43, 0, 2, 4, 6, 10, 1, 5];
+        expect(integers..sort(existingComparator), expected);
+
+        final mappedList =
+            integers.map((e) => ComparableObject(e, 'Element $e')).toList();
+        final sorted = mappedList
+          ..sort(
+            Comparing.mapping(
+              existingComparator,
+              (v) => v.priority,
+            ),
+          );
+        expect(sorted.map((e) => e.priority), expected);
+      });
+    });
   });
 }
