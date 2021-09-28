@@ -12,6 +12,14 @@ class Comparing {
     return (a, b) => mapper(a).compareTo(mapper(b));
   }
 
+  /// Use if you already have a custom comparator you wish to use but your list needs some mapping to get to the comparator's type.
+  static Comparator<V> mapping<T, V>(
+    Comparator<T> comparator,
+    T Function(V v) mapper,
+  ) {
+    return (a, b) => comparator(mapper(a), mapper(b));
+  }
+
   /// Join several mappers and compare in order (first the first element, then the second, and so on).
   static Comparator<T> join<T>(List<Comparable Function(T t)> mappers) {
     return (a, b) {
