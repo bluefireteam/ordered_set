@@ -1,6 +1,7 @@
-## [next]
+## 4.0.0
 
 - Add `Comparing#mapper`
+- Add `strictMode` to QueryableOrderedSet
 
 ## 3.2.0
 
