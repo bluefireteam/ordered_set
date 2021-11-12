@@ -277,6 +277,24 @@ void main() {
         expect(a.remove(a3), true);
         expect(a.toList().join(), '**');
       });
+
+      test('removeAll', () {
+        final orderedSet = OrderedSet<ComparableObject>(
+          Comparing.on((e) => e.priority),
+        );
+
+        final a = ComparableObject(0, 'a');
+        final b = ComparableObject(1, 'b');
+        final c = ComparableObject(2, 'c');
+        final d = ComparableObject(3, 'd');
+
+        orderedSet.addAll([d, b, a, c]);
+        expect(orderedSet.removeAll([c, a]).join(), 'ca');
+        expect(orderedSet.toList().join(), 'bd');
+        orderedSet.addAll([d, b, a, c]);
+        expect(orderedSet.removeAll([d, b]).join(), 'db');
+        expect(orderedSet.toList().join(), 'abcd');
+      });
     });
 
     group('rebalancing', () {
