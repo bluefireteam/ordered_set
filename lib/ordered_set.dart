@@ -86,9 +86,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     final added = _backingSet.add([e]);
     if (!added) {
       _backingSet.lookup([e])!.add(e);
-      // TODO: Shouldn't we return false here and not add the element, to make it a proper set?
     }
-    // TODO: Moved into else if it is decided that duplicate elements are discarded.
     _validReverseCache = false;
     return true;
   }
