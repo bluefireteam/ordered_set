@@ -63,7 +63,7 @@ jobs:
           channel: 'beta'
       - run: flutter pub get # make sure flutter downloads dart for us
       - run: ./scripts/coverage.sh
-      - uses: coverallsapp/github-action@main
+      - uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
   # END TESTING STAGE
