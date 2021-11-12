@@ -3,7 +3,7 @@ name: cicd
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     types: [opened, reopened, synchronize]
 
@@ -63,7 +63,7 @@ jobs:
           channel: 'beta'
       - run: flutter pub get # make sure flutter downloads dart for us
       - run: ./scripts/coverage.sh
-      - uses: coverallsapp/github-action@master
+      - uses: coverallsapp/github-action@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
   # END TESTING STAGE
