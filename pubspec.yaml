@@ -8,6 +8,6 @@ environment:
 
 dev_dependencies:
   test: ^1.16.0-nullsafety
-  dart_code_metrics: ^3.2.2
   dartdoc: ^0.42.0
   coverage: ^1.0.3
+  flame_lint: ^0.0.1
