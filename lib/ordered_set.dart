@@ -11,7 +11,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   late int _length;
 
   bool _validReverseCache = true;
-  Iterable<E> _reverseCache = Iterable.empty();
+  Iterable<E> _reverseCache = const Iterable.empty();
 
   // Copied from SplayTreeSet, but those are private there
   static int _dynamicCompare(dynamic a, dynamic b) => Comparable.compare(
