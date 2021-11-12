@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: set-packages
-        run: echo "::set-output name=packages::['./pubspec.yaml']"
+        run: echo "::set-output name=packages::$(find . -type f -name "pubspec.yaml" | jq -R -s -c 'split("\n")[:-1]')"
 
   dartdoc:
     runs-on: ubuntu-latest
