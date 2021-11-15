@@ -37,9 +37,6 @@ jobs:
         with:
           channel: 'stable'
       - uses: flame-engine/flame-analyze-action@v2
-      - uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
   # END LINTING STAGE
 
   # BEGIN TESTING STAGE
