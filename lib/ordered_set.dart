@@ -59,6 +59,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     return _backingSet.expand<E>((es) => es).iterator;
   }
 
+  /// The tree's elements in reversed order, cached when possible.
   Iterable<E> reversed() {
     if (!_validReverseCache) {
       _reverseCache = toList(growable: false).reversed;

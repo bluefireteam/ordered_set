@@ -15,7 +15,7 @@ class _CacheEntry<C, T> {
 ///
 /// You can [register] a set of queries, i.e., predefined sub-types, whose
 /// results, i.e., subsets of this set, are then cached. Since the queries
-/// have to be type checked, and types are runtime constants, this can be
+/// have to be type checks, and types are runtime constants, this can be
 /// vastly optimized.
 ///
 /// If you find yourself doing a lot of:
