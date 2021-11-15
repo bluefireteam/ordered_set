@@ -10,6 +10,9 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   late SplayTreeSet<List<E>> _backingSet;
   late int _length;
 
+  bool _validReverseCache = true;
+  Iterable<E> _reverseCache = const Iterable.empty();
+
   // Copied from SplayTreeSet, but those are private there
   static int _dynamicCompare(dynamic a, dynamic b) => Comparable.compare(
         a as Comparable,
@@ -56,19 +59,28 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     return _backingSet.expand<E>((es) => es).iterator;
   }
 
-  /// Adds each element of the provided [es] to this and returns the number of
+  /// The tree's elements in reversed order, cached when possible.
+  Iterable<E> reversed() {
+    if (!_validReverseCache) {
+      _reverseCache = toList(growable: false).reversed;
+    }
+    return _reverseCache;
+  }
+
+  /// Adds each element of the provided [elements] to this and returns the number of
   /// elements added.
   ///
   /// Since elements are always added, this should always return the length of
-  /// [es].
-  int addAll(Iterable<E> es) {
-    return es.map(add).where((e) => e).length;
+  /// [elements].
+  int addAll(Iterable<E> elements) {
+    _validReverseCache = false;
+    return elements.map(add).where((e) => e).length;
   }
 
-  /// Adds the element [e] to this, and returns wether the element was
-  /// succesfully added or not.
+  /// Adds the element [e] to this, and returns whether the element was
+  /// successfully added or not.
   ///
-  /// You can always add elements, even duplicated elemneted are added, so this
+  /// You can always add elements, even duplicated elements are added, so this
   /// always return true.
   bool add(E e) {
     _length++;
@@ -76,6 +88,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     if (!added) {
       _backingSet.lookup([e])!.add(e);
     }
+    _validReverseCache = false;
     return true;
   }
 
@@ -89,7 +102,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   /// [rebalanceWhere].
   /// Note: rebalancing is **not** stable.
   void rebalanceAll() {
-    final elements = toList();
+    final elements = toList(growable: false);
     clear();
     addAll(elements);
   }
@@ -102,14 +115,19 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   /// In general be careful with using comparing functions that can change.
   /// Note: rebalancing is **not** stable.
   void rebalanceWhere(bool Function(E element) test) {
-    final elements = removeWhere(test).toList();
+    final elements = removeWhere(test);
     addAll(elements);
   }
 
   /// Remove all elements that match the [test] condition; returns the removed
-  /// elements
+  /// elements.
   Iterable<E> removeWhere(bool Function(E element) test) {
-    return where(test).toList()..forEach(remove);
+    return where(test).toList(growable: false)..forEach(remove);
+  }
+
+  /// Remove all [elements] and returns the removed elements.
+  Iterable<E> removeAll(Iterable<E> elements) {
+    return elements.where(remove).toList(growable: false);
   }
 
   /// Remove a single element that is equal to [e].
@@ -140,12 +158,14 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     if (result) {
       _length--;
       _backingSet.remove(<E>[]);
+      _validReverseCache = false;
     }
     return result;
   }
 
   /// Removes all elements of this.
   void clear() {
+    _validReverseCache = false;
     _backingSet.clear();
     _length = 0;
   }
