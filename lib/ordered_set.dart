@@ -70,11 +70,8 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
     return _reverseCache;
   }
 
-  /// Adds each element of the provided [elements] to this and returns the number of
-  /// elements added.
-  ///
-  /// Since elements are always added, this should always return the length of
-  /// [elements].
+  /// Adds each element of the provided [elements] to this and returns the
+  /// number of elements added.
   int addAll(Iterable<E> elements) => elements.map(add).where((e) => e).length;
 
   /// Adds the element [e] to this, and returns whether the element was
