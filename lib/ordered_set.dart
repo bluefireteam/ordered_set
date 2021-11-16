@@ -7,7 +7,10 @@ import 'dart:collection';
 /// priority to be added. It also implements [Iterable], so you can iterate it
 /// in O(n).
 class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
-  late SplayTreeSet<List<E>> _backingSet;
+  // If the default implementation of `Set` changes from `LinkedHashSet` to
+  // something else that isn't ordered we'll have to change this to explicitly
+  // be `LinkedHashSet` (or some other data structure that preserves order).
+  late SplayTreeSet<Set<E>> _backingSet;
   late int _length;
 
   bool _validReverseCache = true;
@@ -32,7 +35,7 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   /// and the elements must be comparable.
   OrderedSet([int Function(E e1, E e2)? compare]) {
     final comparator = compare ?? _defaultCompare<E>();
-    _backingSet = SplayTreeSet<List<E>>((List<E> l1, List<E> l2) {
+    _backingSet = SplayTreeSet<LinkedHashSet<E>>((Set<E> l1, Set<E> l2) {
       if (l1.isEmpty) {
         if (l2.isEmpty) {
           return 0;
@@ -72,24 +75,23 @@ class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
   ///
   /// Since elements are always added, this should always return the length of
   /// [elements].
-  int addAll(Iterable<E> elements) {
-    _validReverseCache = false;
-    return elements.map(add).where((e) => e).length;
-  }
+  int addAll(Iterable<E> elements) => elements.map(add).where((e) => e).length;
 
   /// Adds the element [e] to this, and returns whether the element was
-  /// successfully added or not.
-  ///
-  /// You can always add elements, even duplicated elements are added, so this
-  /// always return true.
+  /// added or not. If the element already exists in the collection, it isn't
+  /// added.
   bool add(E e) {
-    _length++;
-    final added = _backingSet.add([e]);
-    if (!added) {
-      _backingSet.lookup([e])!.add(e);
+    final elementSet = {e};
+    var added = false;
+    final isRootSet = added = _backingSet.add(elementSet);
+    if (!isRootSet) {
+      added = _backingSet.lookup(elementSet)!.add(e);
     }
-    _validReverseCache = false;
-    return true;
+    if (added) {
+      _length++;
+      _validReverseCache = false;
+    }
+    return added;
   }
 
   /// Allows you to rebalance the whole tree. If you are dealing with

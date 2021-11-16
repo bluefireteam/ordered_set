@@ -1,6 +1,7 @@
 ## [Next]
 - Add `OrderedSet.reversed`
 - Add `OrderedSet.removeAll`
+- Elements that already exists in the set are not added
 
 ## 4.0.0
 
