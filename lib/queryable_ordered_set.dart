@@ -33,7 +33,7 @@ class _CacheEntry<C, T> {
 /// types; if you do so, the registration cost is payed on the first query.
 class QueryableOrderedSet<T> extends OrderedSet<T> {
   /// Controls whether running an unregistered query throws an error or
-  /// performs a just-in-time filtering.
+  /// performs just-in-time filtering.
   final bool strictMode;
   final Map<Type, _CacheEntry<T, T>> _cache = {};
 
@@ -69,7 +69,7 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
   /// except that it is O(0).
   ///
   /// Note: you *must* call [register] for every type [C] you desire to use
-  /// before calling this.
+  /// before calling this, or set [strictMode] to false.
   List<C> query<C extends T>() {
     final result = _cache[C];
     if (result == null) {

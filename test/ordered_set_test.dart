@@ -277,6 +277,24 @@ void main() {
         expect(a.remove(a3), true);
         expect(a.toList().join(), '**');
       });
+
+      test('removeAll', () {
+        final orderedSet = OrderedSet<ComparableObject>(
+          Comparing.on((e) => e.priority),
+        );
+
+        final a = ComparableObject(0, 'a');
+        final b = ComparableObject(1, 'b');
+        final c = ComparableObject(2, 'c');
+        final d = ComparableObject(3, 'd');
+
+        orderedSet.addAll([d, b, a, c]);
+        expect(orderedSet.removeAll([c, a]).join(), 'ca');
+        expect(orderedSet.toList().join(), 'bd');
+        orderedSet.addAll([d, b, a, c]);
+        expect(orderedSet.removeAll([d, b]).join(), 'db');
+        expect(orderedSet.toList().join(), 'abcd');
+      });
     });
 
     group('rebalancing', () {
@@ -303,6 +321,42 @@ void main() {
         expect(orderedSet.toList().join(), 'bcda');
         orderedSet.rebalanceAll();
         expect(orderedSet.toList().join(), 'cdab');
+      });
+    });
+
+    group('reversed', () {
+      test('reversed properly invalidates cache', () {
+        final orderedSet = OrderedSet<ComparableObject>(
+          Comparing.on((e) => e.priority),
+        );
+
+        final a = ComparableObject(0, 'a');
+        final b = ComparableObject(1, 'b');
+        final c = ComparableObject(2, 'c');
+        final d = ComparableObject(3, 'd');
+
+        orderedSet.addAll([d, b, a, c]);
+        expect(orderedSet.reversed().join(), 'dcba');
+
+        a.priority = 4;
+        expect(orderedSet.reversed().join(), 'dcba');
+        orderedSet.rebalanceWhere((e) => identical(e, a));
+        expect(orderedSet.reversed().join(), 'adcb');
+
+        b.priority = 5;
+        c.priority = -1;
+        expect(orderedSet.reversed().join(), 'adcb');
+        orderedSet.rebalanceAll();
+        expect(orderedSet.reversed().join(), 'badc');
+
+        orderedSet.remove(d);
+        expect(orderedSet.reversed().join(), 'bac');
+        orderedSet.add(d);
+        expect(orderedSet.reversed().join(), 'badc');
+        orderedSet.removeAll([a, b]);
+        expect(orderedSet.reversed().join(), 'dc');
+        orderedSet.addAll([a, b]);
+        expect(orderedSet.reversed().join(), 'badc');
       });
     });
   });

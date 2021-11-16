@@ -1,3 +1,7 @@
+## [Next]
+- Add `OrderedSet.reversed`
+- Add `OrderedSet.removeAll`
+
 ## 4.0.0
 
 - Add `Comparing#mapper`
