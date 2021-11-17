@@ -11,3 +11,4 @@ dev_dependencies:
   dart_code_metrics: ^4.6.0
   dartdoc: ^4.1.0
   coverage: ^1.0.3
+  flame_lint: ^0.0.1
