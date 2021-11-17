@@ -16,9 +16,8 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-      - uses: flame-engine/flame-dartdoc-action@v2
-        with:
-          package-path: './pubspec.yaml'
+      - run: flutter pub get # make sure flutter downloads dart for us
+      - run: ./scripts/dartdoc.sh
 
   format:
     runs-on: ubuntu-latest
@@ -27,7 +26,8 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-      - uses: flame-engine/flame-format-action@v1
+      - run: flutter pub get # make sure flutter downloads dart for us
+      - run: ./scripts/format.sh
 
   analyze:
     runs-on: ubuntu-latest
@@ -36,7 +36,8 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-      - uses: flame-engine/flame-analyze-action@v2
+      - run: flutter pub get # make sure flutter downloads dart for us
+      - run: ./scripts/analyze.sh
   # END LINTING STAGE
 
   # BEGIN TESTING STAGE
