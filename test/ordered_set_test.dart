@@ -7,7 +7,7 @@ import 'comparable_object.dart';
 void main() {
   group('OrderedSet', () {
     group('#removeWhere', () {
-      test('remove single ement', () {
+      test('remove single element', () {
         final a = OrderedSet<int>();
         expect(a.addAll([7, 4, 3, 1, 2, 6, 5]), 7);
         expect(a.length, 7);
@@ -111,23 +111,39 @@ void main() {
 
       test('with identical elements', () {
         final a = OrderedSet<int>();
-        expect(a.addAll([4, 3, 3, 2, 2, 2, 1]), 7);
-        expect(a.length, 7);
-        expect(a.toList().join(), '1222334');
+        expect(a.addAll([4, 3, 3, 2, 2, 2, 1]), 4);
+        expect(a.length, 4);
+        expect(a.toList().join(), '1234');
       });
 
-      test('duplicated item is ok', () {
+      test('elements with same priorities', () {
+        final a = OrderedSet<ComparableObject>();
+
+        final e1 = ComparableObject(1, 'e1');
+        final e2 = ComparableObject(1, 'e2');
+        final e3 = ComparableObject(2, 'e3');
+        final e4 = ComparableObject(2, 'e4');
+        a.addAll([e1, e3, e2, e4]);
+
+        expect(a.toList().join(), 'e1e2e3e4');
+        a.remove(e2);
+        expect(a.toList().join(), 'e1e3e4');
+        a.add(e2);
+        expect(a.toList().join(), 'e1e2e3e4');
+      });
+
+      test('duplicated item is discarded', () {
         final a = OrderedSet<int>();
         a.add(2);
         a.add(1);
         a.add(2);
-        expect(a.length, 3);
-        expect(a.toList().join(), '122');
+        expect(a.length, 2);
+        expect(a.toList().join(), '12');
       });
     });
 
     group('#length', () {
-      test('keeps track of lenth when adding', () {
+      test('keeps track of length when adding', () {
         final a = OrderedSet<int>();
         expect(a.add(1), true);
         expect(a.length, 1);
@@ -137,7 +153,7 @@ void main() {
         expect(a.length, 3);
       });
 
-      test('keeps track of lenth when removing', () {
+      test('keeps track of length when removing', () {
         final a = OrderedSet<int>((a, b) => 0); // no priority
         expect(a.addAll([1, 2, 3, 4]), 4);
         expect(a.length, 4);
@@ -210,8 +226,8 @@ void main() {
       test('test items with actual duplicated items', () {
         final a = OrderedSet<int>();
         expect(a.add(1), true);
-        expect(a.add(1), true);
-        expect(a.toList(), [1, 1]);
+        expect(a.add(1), false);
+        expect(a.toList(), [1]);
       });
 
       test('test remove items', () {
@@ -228,12 +244,12 @@ void main() {
         final a = OrderedSet<int>();
         expect(a.add(0), true);
         expect(a.add(1), true);
-        expect(a.add(1), true);
+        expect(a.add(1), false);
         expect(a.add(2), true);
-        expect(a.toList(), [0, 1, 1, 2]);
-        expect(a.remove(1), true);
         expect(a.toList(), [0, 1, 2]);
         expect(a.remove(1), true);
+        expect(a.toList(), [0, 2]);
+        expect(a.remove(1), false);
         expect(a.toList(), [0, 2]);
       });
 
@@ -293,7 +309,7 @@ void main() {
         expect(orderedSet.toList().join(), 'bd');
         orderedSet.addAll([d, b, a, c]);
         expect(orderedSet.removeAll([d, b]).join(), 'db');
-        expect(orderedSet.toList().join(), 'abcd');
+        expect(orderedSet.toList().join(), 'abc');
       });
     });
 
