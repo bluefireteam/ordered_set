@@ -1,3 +1,6 @@
+## 5.0.0
+- Relaunch of 4.1.0
+
 ## 4.1.0
 - Add `OrderedSet.reversed`
 - Add `OrderedSet.removeAll`
