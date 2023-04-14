@@ -6,7 +6,7 @@ import 'dart:collection';
 /// [SplayTreeSet], it allows for several different elements with the same
 /// priority to be added. It also implements [Iterable], so you can iterate it
 /// in O(n).
-class OrderedSet<E> extends IterableMixin<E> implements Iterable<E> {
+class OrderedSet<E> extends IterableMixin<E> {
   // If the default implementation of `Set` changes from `LinkedHashSet` to
   // something else that isn't ordered we'll have to change this to explicitly
   // be `LinkedHashSet` (or some other data structure that preserves order).

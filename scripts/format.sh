@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pub get
+dart pub get
 
 FORMAT_ISSUES=$(dart format --output=none --set-exit-if-changed .)
 if [ $? -eq 1 ]; then

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pub get
+dart pub get
 
 result=$(pub run dart_code_metrics:metrics .)
 if [ "$result" != "" ]; then
