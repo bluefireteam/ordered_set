@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-pub get
-pub run dartdoc --no-auto-include-dependencies --quiet
+dart pub get
+dart pub run dartdoc --no-auto-include-dependencies --quiet
