@@ -1,7 +1,13 @@
+## 5.0.1
+
+- Remove `ìmplements Iterable` to make Dart 3.10 happy
+
 ## 5.0.0
+
 - Relaunch of 4.1.0
 
 ## 4.1.0
+
 - Add `OrderedSet.reversed`
 - Add `OrderedSet.removeAll`
 - Elements that already exists in the set are not added
