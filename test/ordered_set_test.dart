@@ -311,6 +311,16 @@ void main() {
         expect(orderedSet.removeAll([d, b]).join(), 'db');
         expect(orderedSet.toList().join(), 'abc');
       });
+
+      test('sorts after remove', () {
+        final orderedSet = OrderedSet<int>();
+        orderedSet.addAll([1, 3, 4]);
+        expect(orderedSet.toList().join(), '134');
+        expect(orderedSet.remove(4), true);
+        expect(orderedSet.toList().join(), '13');
+        expect(orderedSet.add(2), true);
+        expect(orderedSet.toList().join(), '123');
+      });
     });
 
     group('rebalancing', () {
