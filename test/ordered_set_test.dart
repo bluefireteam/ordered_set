@@ -309,11 +309,12 @@ void main() {
         expect(orderedSet.toList().join(), 'bd');
         orderedSet.addAll([d, b, a, c]);
         expect(orderedSet.removeAll([d, b]).join(), 'db');
-        expect(orderedSet.toList().join(), 'abc');
+        expect(orderedSet.toList().join(), 'ac');
       });
 
       test('sorts after remove', () {
         final orderedSet = OrderedSet<int>();
+        // The initial elements must be in order.
         orderedSet.addAll([1, 3, 4]);
         expect(orderedSet.toList().join(), '134');
         expect(orderedSet.remove(4), true);
