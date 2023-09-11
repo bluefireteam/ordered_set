@@ -156,7 +156,8 @@ class OrderedSet<E> extends IterableMixin<E> {
     final result = bucket.remove(e);
     if (result) {
       _length--;
-      _backingSet.remove(<E>[]);
+      // If the removal resulted in an empty bucket, remove the bucket as well.
+      _backingSet.remove(<E>{});
       _validReverseCache = false;
     }
     return result;
