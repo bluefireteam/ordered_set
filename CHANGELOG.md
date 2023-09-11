@@ -1,3 +1,7 @@
+## 5.0.2
+
+- Fix bug with sorting after removal of element that leaves a bucket empty
+
 ## 5.0.1
 
 - Remove `ìmplements Iterable` to make Dart 3.10 happy
