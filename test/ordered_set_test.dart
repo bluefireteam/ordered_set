@@ -34,7 +34,8 @@ void main() {
 
         a.addAll([e1, e2, e3, e4]);
         e1.priority = 2;
-        // no rebalance! note that this is a broken state until rebalance is called
+        // no rebalance! note that this is a broken state until rebalance is
+        // called.
         expect(a.remove(e1), true);
         expect(a.toList().join(), 'e2e3e4');
       });
@@ -257,13 +258,18 @@ void main() {
         final a = OrderedSet<ComparableObject>(
           (a, b) => -a.priority.compareTo(b.priority),
         );
-        ComparableObject a1, a2, a3, a4, a5, a6;
-        expect(a.add(a6 = ComparableObject(0, '6')), true);
-        expect(a.add(a3 = ComparableObject(1, '3')), true);
-        expect(a.add(a4 = ComparableObject(1, '4')), true);
-        expect(a.add(a5 = ComparableObject(1, '5')), true);
-        expect(a.add(a1 = ComparableObject(2, '1')), true);
-        expect(a.add(a2 = ComparableObject(2, '2')), true);
+        final a1 = ComparableObject(0, '6');
+        final a2 = ComparableObject(1, '3');
+        final a3 = ComparableObject(1, '4');
+        final a4 = ComparableObject(1, '5');
+        final a5 = ComparableObject(2, '1');
+        final a6 = ComparableObject(2, '2');
+        expect(a.add(a6), true);
+        expect(a.add(a3), true);
+        expect(a.add(a4), true);
+        expect(a.add(a5), true);
+        expect(a.add(a1), true);
+        expect(a.add(a2), true);
         expect(a.toList().join(), '123456');
 
         expect(a.remove(a4), true);
