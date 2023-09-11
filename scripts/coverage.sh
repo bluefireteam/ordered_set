@@ -1,7 +1,5 @@
 #!/bin/bash -xe
 
-dart pub get
-
 dart test --coverage=coverage .
 
 dart pub run coverage:format_coverage \
