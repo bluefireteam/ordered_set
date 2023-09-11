@@ -12,32 +12,26 @@ jobs:
   dartdoc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
-      - run: flutter pub get # make sure flutter downloads dart for us
-      - run: ./scripts/dartdoc.sh
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
+      - run: dart pub run dartdoc --no-auto-include-dependencies --quiet
 
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
-      - run: flutter pub get # make sure flutter downloads dart for us
-      - run: ./scripts/format.sh
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
+      - run: dart format --output=none --set-exit-if-changed .
 
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
-      - run: flutter pub get # make sure flutter downloads dart for us
-      - run: ./scripts/analyze.sh
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
+      - run: dart analyze
   # END LINTING STAGE
 
   # BEGIN TESTING STAGE
@@ -45,11 +39,9 @@ jobs:
     needs: [dartdoc, format, analyze]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
-        with:
-          channel: 'stable'
-      - run: flutter pub get # make sure flutter downloads dart for us
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1
+      - run: dart pub get
       - run: ./scripts/coverage.sh
       - uses: coverallsapp/github-action@master
         with:

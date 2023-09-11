@@ -1,4 +1,4 @@
-import 'ordered_set.dart';
+import 'package:ordered_set/ordered_set.dart';
 
 class _CacheEntry<C, T> {
   final List<C> data;
