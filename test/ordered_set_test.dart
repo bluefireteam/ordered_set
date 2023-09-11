@@ -258,12 +258,12 @@ void main() {
         final a = OrderedSet<ComparableObject>(
           (a, b) => -a.priority.compareTo(b.priority),
         );
-        final a1 = ComparableObject(0, '6');
-        final a2 = ComparableObject(1, '3');
-        final a3 = ComparableObject(1, '4');
-        final a4 = ComparableObject(1, '5');
-        final a5 = ComparableObject(2, '1');
-        final a6 = ComparableObject(2, '2');
+        final a1 = ComparableObject(2, '1');
+        final a2 = ComparableObject(2, '2');
+        final a3 = ComparableObject(1, '3');
+        final a4 = ComparableObject(1, '4');
+        final a5 = ComparableObject(1, '5');
+        final a6 = ComparableObject(0, '6');
         expect(a.add(a6), true);
         expect(a.add(a3), true);
         expect(a.add(a4), true);
