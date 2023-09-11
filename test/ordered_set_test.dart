@@ -36,7 +36,7 @@ void main() {
         e1.priority = 2;
         // no rebalance! note that this is a broken state until rebalance is
         // called.
-        expect(a.remove(e1), true);
+        expect(a.remove(e1), isTrue);
         expect(a.toList().join(), 'e2e3e4');
       });
 
@@ -50,14 +50,14 @@ void main() {
 
       test('remove from same group and different groups', () {
         final a = OrderedSet<ComparableObject>();
-        expect(a.add(ComparableObject(0, 'a1')), true);
-        expect(a.add(ComparableObject(0, 'a2')), true);
-        expect(a.add(ComparableObject(0, 'b1')), true);
-        expect(a.add(ComparableObject(1, 'a3')), true);
-        expect(a.add(ComparableObject(1, 'b2')), true);
-        expect(a.add(ComparableObject(1, 'b3')), true);
-        expect(a.add(ComparableObject(2, 'a4')), true);
-        expect(a.add(ComparableObject(2, 'b4')), true);
+        expect(a.add(ComparableObject(0, 'a1')), isTrue);
+        expect(a.add(ComparableObject(0, 'a2')), isTrue);
+        expect(a.add(ComparableObject(0, 'b1')), isTrue);
+        expect(a.add(ComparableObject(1, 'a3')), isTrue);
+        expect(a.add(ComparableObject(1, 'b2')), isTrue);
+        expect(a.add(ComparableObject(1, 'b3')), isTrue);
+        expect(a.add(ComparableObject(2, 'a4')), isTrue);
+        expect(a.add(ComparableObject(2, 'b4')), isTrue);
         expect(a.removeWhere((e) => e.name.startsWith('a')).length, 4);
         expect(a.length, 4);
         expect(a.toList().join(), 'b1b2b3b4');
@@ -65,14 +65,14 @@ void main() {
 
       test('remove all', () {
         final a = OrderedSet<ComparableObject>();
-        expect(a.add(ComparableObject(0, 'a1')), true);
-        expect(a.add(ComparableObject(0, 'a2')), true);
-        expect(a.add(ComparableObject(0, 'b1')), true);
-        expect(a.add(ComparableObject(1, 'a3')), true);
-        expect(a.add(ComparableObject(1, 'b2')), true);
-        expect(a.add(ComparableObject(1, 'b3')), true);
-        expect(a.add(ComparableObject(2, 'a4')), true);
-        expect(a.add(ComparableObject(2, 'b4')), true);
+        expect(a.add(ComparableObject(0, 'a1')), isTrue);
+        expect(a.add(ComparableObject(0, 'a2')), isTrue);
+        expect(a.add(ComparableObject(0, 'b1')), isTrue);
+        expect(a.add(ComparableObject(1, 'a3')), isTrue);
+        expect(a.add(ComparableObject(1, 'b2')), isTrue);
+        expect(a.add(ComparableObject(1, 'b3')), isTrue);
+        expect(a.add(ComparableObject(2, 'a4')), isTrue);
+        expect(a.add(ComparableObject(2, 'b4')), isTrue);
         expect(a.removeWhere((e) => true).length, 8);
         expect(a.length, 0);
         expect(a.toList().join(), '');
@@ -146,11 +146,11 @@ void main() {
     group('#length', () {
       test('keeps track of length when adding', () {
         final a = OrderedSet<int>();
-        expect(a.add(1), true);
+        expect(a.add(1), isTrue);
         expect(a.length, 1);
-        expect(a.add(2), true);
+        expect(a.add(2), isTrue);
         expect(a.length, 2);
-        expect(a.add(3), true);
+        expect(a.add(3), isTrue);
         expect(a.length, 3);
       });
 
@@ -159,45 +159,45 @@ void main() {
         expect(a.addAll([1, 2, 3, 4]), 4);
         expect(a.length, 4);
 
-        expect(a.remove(1), true);
+        expect(a.remove(1), isTrue);
         expect(a.length, 3);
-        expect(a.remove(1), false);
-        expect(a.length, 3);
-
-        expect(a.remove(5), false); // never been there
+        expect(a.remove(1), isFalse);
         expect(a.length, 3);
 
-        expect(a.remove(2), true);
-        expect(a.remove(3), true);
+        expect(a.remove(5), isFalse); // never been there
+        expect(a.length, 3);
+
+        expect(a.remove(2), isTrue);
+        expect(a.remove(3), isTrue);
         expect(a.length, 1);
 
-        expect(a.remove(4), true);
+        expect(a.remove(4), isTrue);
         expect(a.length, 0);
-        expect(a.remove(4), false);
+        expect(a.remove(4), isFalse);
       });
     });
 
     group('#add/#remove', () {
       test('no comparator test with int', () {
         final a = OrderedSet<int>();
-        expect(a.add(2), true);
-        expect(a.add(1), true);
+        expect(a.add(2), isTrue);
+        expect(a.add(1), isTrue);
         expect(a.toList(), [1, 2]);
       });
 
       test('no comparator test with string', () {
         final a = OrderedSet<String>();
-        expect(a.add('aab'), true);
-        expect(a.add('cab'), true);
-        expect(a.add('bab'), true);
+        expect(a.add('aab'), isTrue);
+        expect(a.add('cab'), isTrue);
+        expect(a.add('bab'), isTrue);
         expect(a.toList(), ['aab', 'bab', 'cab']);
       });
 
       test('no comparator test with comparable', () {
         final a = OrderedSet<ComparableObject>();
-        expect(a.add(ComparableObject(12, 'Klaus')), true);
-        expect(a.add(ComparableObject(1, 'Sunny')), true);
-        expect(a.add(ComparableObject(14, 'Violet')), true);
+        expect(a.add(ComparableObject(12, 'Klaus')), isTrue);
+        expect(a.add(ComparableObject(1, 'Sunny')), isTrue);
+        expect(a.add(ComparableObject(14, 'Violet')), isTrue);
         final expected = ['Sunny', 'Klaus', 'Violet'];
         expect(a.toList().map((e) => e.name).toList(), expected);
       });
@@ -206,9 +206,9 @@ void main() {
         final a = OrderedSet<ComparableObject>(
           (a, b) => a.name.compareTo(b.name),
         );
-        expect(a.add(ComparableObject(1, 'Sunny')), true);
-        expect(a.add(ComparableObject(12, 'Klaus')), true);
-        expect(a.add(ComparableObject(14, 'Violet')), true);
+        expect(a.add(ComparableObject(1, 'Sunny')), isTrue);
+        expect(a.add(ComparableObject(12, 'Klaus')), isTrue);
+        expect(a.add(ComparableObject(14, 'Violet')), isTrue);
         final expected = ['Klaus', 'Sunny', 'Violet'];
         expect(a.toList().map((e) => e.name).toList(), expected);
       });
@@ -218,7 +218,7 @@ void main() {
         () {
           final a = OrderedSet<int>((a, b) => (a % 2) - (b % 2));
           for (var i = 0; i < 10; i++) {
-            expect(a.add(i), true);
+            expect(a.add(i), isTrue);
           }
           expect(a.toList(), [0, 2, 4, 6, 8, 1, 3, 5, 7, 9]);
         },
@@ -226,31 +226,31 @@ void main() {
 
       test('test items with actual duplicated items', () {
         final a = OrderedSet<int>();
-        expect(a.add(1), true);
-        expect(a.add(1), false);
+        expect(a.add(1), isTrue);
+        expect(a.add(1), isFalse);
         expect(a.toList(), [1]);
       });
 
       test('test remove items', () {
         final a = OrderedSet<int>();
-        expect(a.add(1), true);
-        expect(a.add(2), true);
-        expect(a.add(0), true);
-        expect(a.remove(1), true);
-        expect(a.remove(3), false);
+        expect(a.add(1), isTrue);
+        expect(a.add(2), isTrue);
+        expect(a.add(0), isTrue);
+        expect(a.remove(1), isTrue);
+        expect(a.remove(3), isFalse);
         expect(a.toList(), [0, 2]);
       });
 
       test('test remove with duplicates', () {
         final a = OrderedSet<int>();
-        expect(a.add(0), true);
-        expect(a.add(1), true);
-        expect(a.add(1), false);
-        expect(a.add(2), true);
+        expect(a.add(0), isTrue);
+        expect(a.add(1), isTrue);
+        expect(a.add(1), isFalse);
+        expect(a.add(2), isTrue);
         expect(a.toList(), [0, 1, 2]);
-        expect(a.remove(1), true);
+        expect(a.remove(1), isTrue);
         expect(a.toList(), [0, 2]);
-        expect(a.remove(1), false);
+        expect(a.remove(1), isFalse);
         expect(a.toList(), [0, 2]);
       });
 
@@ -264,39 +264,39 @@ void main() {
         final a4 = ComparableObject(1, '4');
         final a5 = ComparableObject(1, '5');
         final a6 = ComparableObject(0, '6');
-        expect(a.add(a6), true);
-        expect(a.add(a3), true);
-        expect(a.add(a4), true);
-        expect(a.add(a5), true);
-        expect(a.add(a1), true);
-        expect(a.add(a2), true);
+        expect(a.add(a6), isTrue);
+        expect(a.add(a3), isTrue);
+        expect(a.add(a4), isTrue);
+        expect(a.add(a5), isTrue);
+        expect(a.add(a1), isTrue);
+        expect(a.add(a2), isTrue);
         expect(a.toList().join(), '123456');
 
-        expect(a.remove(a4), true);
+        expect(a.remove(a4), isTrue);
         expect(a.toList().join(), '12356');
-        expect(a.remove(a4), false);
+        expect(a.remove(a4), isFalse);
         expect(a.toList().join(), '12356');
 
-        expect(a.remove(ComparableObject(1, '5')), false);
+        expect(a.remove(ComparableObject(1, '5')), isFalse);
         expect(a.toList().join(), '12356');
-        expect(a.remove(a5), true);
+        expect(a.remove(a5), isTrue);
         expect(a.toList().join(), '1236');
 
-        expect(a.add(ComparableObject(10, '*')), true);
+        expect(a.add(ComparableObject(10, '*')), isTrue);
         expect(a.toList().join(), '*1236');
 
-        expect(a.remove(a1), true);
-        expect(a.remove(a6), true);
+        expect(a.remove(a1), isTrue);
+        expect(a.remove(a6), isTrue);
         expect(a.toList().join(), '*23');
 
-        expect(a.add(ComparableObject(-10, '*')), true);
+        expect(a.add(ComparableObject(-10, '*')), isTrue);
         expect(a.toList().join(), '*23*');
-        expect(a.remove(a2), true);
+        expect(a.remove(a2), isTrue);
         expect(a.toList().join(), '*3*');
-        expect(a.remove(a2), false);
-        expect(a.remove(a2), false);
+        expect(a.remove(a2), isFalse);
+        expect(a.remove(a2), isFalse);
         expect(a.toList().join(), '*3*');
-        expect(a.remove(a3), true);
+        expect(a.remove(a3), isTrue);
         expect(a.toList().join(), '**');
       });
 

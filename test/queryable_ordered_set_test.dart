@@ -256,27 +256,27 @@ void main() {
           comparator: Comparing.on((e) => e.name),
         );
         // No caches should be registered on a clean set
-        expect(orderedSet.isRegistered<Animal>(), false);
-        expect(orderedSet.isRegistered<Mammal>(), false);
+        expect(orderedSet.isRegistered<Animal>(), isFalse);
+        expect(orderedSet.isRegistered<Mammal>(), isFalse);
         orderedSet.register<Animal>();
-        // It shouldn't return true for a subclass of a registered cache
-        expect(orderedSet.isRegistered<Mammal>(), false);
+        // It shouldn't return isTrue for a subclass of a registered cache
+        expect(orderedSet.isRegistered<Mammal>(), isFalse);
         // The Animal cache should report as registered after it has been
         // registered
-        expect(orderedSet.isRegistered<Animal>(), true);
+        expect(orderedSet.isRegistered<Animal>(), isTrue);
         orderedSet.register<Mammal>();
         // The Mammal cache should report as registered after it has been
         // registered
-        expect(orderedSet.isRegistered<Mammal>(), true);
+        expect(orderedSet.isRegistered<Mammal>(), isTrue);
         // The Animal cache should still be reported as registered after another
         // cache has been registered
-        expect(orderedSet.isRegistered<Animal>(), true);
+        expect(orderedSet.isRegistered<Animal>(), isTrue);
         orderedSet.register<Animal>();
         // Both caches should still be reported as registered after a cache has
         // been re-registered (no-op)
-        expect(orderedSet.isRegistered<Animal>(), true);
-        expect(orderedSet.isRegistered<Mammal>(), true);
-        // A call to isRegistered without a type should always be false
+        expect(orderedSet.isRegistered<Animal>(), isTrue);
+        expect(orderedSet.isRegistered<Mammal>(), isTrue);
+        // A call to isRegistered without a type should always be isFalse
       });
     });
   });
