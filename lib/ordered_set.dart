@@ -79,8 +79,8 @@ class OrderedSet<E> extends IterableMixin<E> {
   /// added.
   bool add(E e) {
     final elementSet = {e};
-    var added = false;
-    final isRootSet = added = _backingSet.add(elementSet);
+    var added = _backingSet.add(elementSet);
+    final isRootSet = added;
     if (!isRootSet) {
       added = _backingSet.lookup(elementSet)!.add(e);
     }
@@ -137,7 +137,7 @@ class OrderedSet<E> extends IterableMixin<E> {
   ///     set.removeWhere((a) => a == e);
   ///
   bool remove(E e) {
-    var bucket = _backingSet.lookup([e]);
+    var bucket = _backingSet.lookup({e});
     if (bucket == null || !bucket.contains(e)) {
       // We need a fallback in case [e] has changed and it's no longer found by
       // lookup. Note: changing priorities will leave the splay set on an

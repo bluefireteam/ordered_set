@@ -320,13 +320,23 @@ void main() {
 
       test('sorts after remove', () {
         final orderedSet = OrderedSet<int>();
-        // The initial elements must be in order.
+        // The initial elements must be in order to reproduce the issue.
         orderedSet.addAll([1, 3, 4]);
         expect(orderedSet.toList().join(), '134');
         expect(orderedSet.remove(4), true);
         expect(orderedSet.toList().join(), '13');
         expect(orderedSet.add(2), true);
         expect(orderedSet.toList().join(), '123');
+      });
+
+      test('correct order after remove', () {
+        final set = OrderedSet<int>();
+        set.add(10);
+        set.add(9);
+        set.remove(10);
+        set.add(11);
+        set.add(8);
+        expect(set.toList(), [8, 9, 11]);
       });
     });
 
