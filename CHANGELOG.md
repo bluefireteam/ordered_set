@@ -1,3 +1,7 @@
+## 5.0.3
+
+- Fix bug with sorting after removal of element in root bucket
+ 
 ## 5.0.2
 
 - Fix bug with sorting after removal of element that leaves a bucket empty
