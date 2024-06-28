@@ -10,7 +10,7 @@ class Comparing {
 
   /// Returns a Comparator that compares objects of type T by mapping them to
   /// Comparables.
-  static Comparator<T> on<T>(Comparable Function(T t) mapper) {
+  static Comparator<T> on<T>(Comparable<Object> Function(T t) mapper) {
     return (a, b) => mapper(a).compareTo(mapper(b));
   }
 
@@ -26,7 +26,7 @@ class Comparing {
 
   /// Join several mappers and compare in order (first the first element, then
   /// the second, and so on).
-  static Comparator<T> join<T>(List<Comparable Function(T t)> mappers) {
+  static Comparator<T> join<T>(List<Comparable<Object> Function(T t)> mappers) {
     return (a, b) {
       final r = on(mappers.first)(a, b);
       if (r == 0) {

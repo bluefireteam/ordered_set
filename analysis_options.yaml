@@ -1,1 +1,7 @@
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
 include: package:flame_lint/analysis_options.yaml
