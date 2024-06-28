@@ -1,3 +1,9 @@
+## 6.0.0
+
+- Make `QueryableOrderedSet.query()` return an `Iterable` instead of a `List`,
+  in order to prevent hard-to-track bugs with accidental cache modification
+  from outside
+
 ## 5.0.3
 
 - Fix bug with sorting after removal of element in root bucket
