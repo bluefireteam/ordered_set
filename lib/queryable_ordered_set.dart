@@ -87,6 +87,20 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
     return result.data as Iterable<C>;
   }
 
+  /// Creates a new lazy [Iterable] with all elements that have type [C].
+  ///
+  /// When available, the cached result is used (as in [query])
+  /// in constant time. Otherwise, this works exactly the same as
+  /// [Iterable.whereType], in linear time.
+  @override
+  Iterable<C> whereType<C>() {
+    final result = _cache[C];
+    if (result != null) {
+      return result.data as Iterable<C>;
+    }
+    return super.whereType<C>();
+  }
+
   /// Whether type [C] is registered as a cache
   bool isRegistered<C>() => _cache.containsKey(C);
 

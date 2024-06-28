@@ -293,6 +293,25 @@ void main() {
         final dogs = orderedSet.query<Dog>();
         expect(dogs, isA<Iterable<Dog>>());
       });
+      test('overridden #whereType works as expected', () {
+        final dog = Dog()..name = 'Joey';
+        final bird = Bird()..name = 'Louise';
+
+        final orderedSet = QueryableOrderedSet<Animal>(
+          comparator: Comparing.on((e) => e.name),
+        );
+        orderedSet.register<Dog>();
+
+        orderedSet.add(dog);
+        orderedSet.add(bird);
+
+        final dogs = orderedSet.whereType<Dog>();
+        expect(dogs, unorderedMatches(<Dog>[dog]));
+        final birds = orderedSet.whereType<Bird>();
+        expect(birds, unorderedMatches(<Bird>[bird]));
+        final fish = orderedSet.whereType<Fish>();
+        expect(fish, unorderedMatches(<Fish>[]));
+      });
     });
   });
 }
