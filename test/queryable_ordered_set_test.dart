@@ -292,11 +292,6 @@ void main() {
 
         final dogs = orderedSet.query<Dog>();
         expect(dogs, isA<Iterable<Dog>>());
-
-        // Note that the following fails, since it _is_ possible to force cast
-        // the returned value as a List.
-        // expect(dogs is List<Dog>, isFalse);
-        // expect(dogs, isNot(isA<List<Dog>>()));
       });
     });
   });
