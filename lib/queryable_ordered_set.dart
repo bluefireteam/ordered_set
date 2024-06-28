@@ -70,7 +70,7 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
   ///
   /// Note: you *must* call [register] for every type [C] you desire to use
   /// before calling this, or set [strictMode] to false.
-  List<C> query<C extends T>() {
+  Iterable<C> query<C extends T>() {
     final result = _cache[C];
     if (result == null) {
       if (strictMode) {
@@ -80,7 +80,11 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
         return query<C>();
       }
     }
-    return result.data as List<C>;
+    // We are returning the cached List itself but we cast it as an Iterable
+    // to prevent users from accidentally modifying the cache from outside.
+    // We are not using an UnmodifiableListView() or anything similar because
+    // we want to avoid creating a new object for every query.
+    return result.data as Iterable<C>;
   }
 
   /// Whether type [C] is registered as a cache

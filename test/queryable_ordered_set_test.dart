@@ -278,6 +278,21 @@ void main() {
         expect(orderedSet.isRegistered<Mammal>(), isTrue);
         // A call to isRegistered without a type should always be isFalse
       });
+      test('#query returns Iterable', () {
+        final dog = Dog()..name = 'Joey';
+        final bird = Bird()..name = 'Louise';
+
+        final orderedSet = QueryableOrderedSet<Animal>(
+          comparator: Comparing.on((e) => e.name),
+        );
+        orderedSet.register<Dog>();
+
+        orderedSet.add(dog);
+        orderedSet.add(bird);
+
+        final dogs = orderedSet.query<Dog>();
+        expect(dogs, isA<Iterable<Dog>>());
+      });
     });
   });
 }
