@@ -1,3 +1,8 @@
+## 6.0.1
+
+- Use cached results in `whereType()` when available, making `whereType()` 
+  return in constant time when the type is registered
+
 ## 6.0.0
 
 - Make `QueryableOrderedSet.query()` return an `Iterable` instead of a `List`,
