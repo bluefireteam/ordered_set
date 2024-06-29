@@ -9,7 +9,7 @@ class Comparing {
   }
 
   /// Returns a Comparator that compares objects of type T by mapping them to
-  /// Comparables.
+  /// [Comparable]s.
   static Comparator<T> on<T>(Comparable<Object?> Function(T t) mapper) {
     return (a, b) => mapper(a).compareTo(mapper(b));
   }
