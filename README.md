@@ -1,8 +1,8 @@
 # ordered_set
 
 [![Pub Version](https://img.shields.io/pub/v/ordered_set)](https://pub.dev/packages/ordered_set)
-[![Build Status](https://github.com/flame-engine/flame/workflows/cicd/badge.svg?branch=master&event=push)](https://github.com/bluefireteam/ordered_set/actions/workflows/cicd.yml)
-[![Coverage Status](https://coveralls.io/repos/github/bluefireteam/ordered_set/badge.svg?branch=master)](https://coveralls.io/github/bluefireteam/ordered_set?branch=master)
+[![Build Status](https://github.com/flame-engine/flame/workflows/cicd/badge.svg?branch=main&event=push)](https://github.com/bluefireteam/ordered_set/actions/workflows/cicd.yml)
+[![Coverage Status](https://coveralls.io/repos/github/bluefireteam/ordered_set/badge.svg?branch=main)](https://coveralls.io/github/bluefireteam/ordered_set?branch=main)
 
 A simple implementation for an ordered set for Dart.
 
