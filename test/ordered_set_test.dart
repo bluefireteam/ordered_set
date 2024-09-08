@@ -79,6 +79,25 @@ void main() {
       });
     });
 
+    group('#removeAt', () {
+      test('removes the element at index', () {
+        final a = OrderedSet<int>();
+        a.addAll([1, 2, 3, 4, 5, 6]);
+        expect(a.length, 6);
+        expect(a.removeAt(3), isTrue);
+        expect(a.length, 5);
+        expect(a.contains(4), isFalse);
+      });
+
+      test('does not remove non-existing index', () {
+        final a = OrderedSet<int>();
+        a.addAll([1, 2, 3, 4, 5, 6]);
+        expect(a.length, 6);
+        expect(() => a.removeAt(7), throwsRangeError);
+        expect(a.length, 6);
+      });
+    });
+
     group('#clear', () {
       test('removes all and updates length', () {
         final a = OrderedSet<int>();
