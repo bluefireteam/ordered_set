@@ -11,6 +11,7 @@ environment:
   sdk: '>=3.4.0 <4.0.0'
 
 dev_dependencies:
+  benchmark_harness: ^2.2.2
   coverage: ^1.8.0
   dartdoc: ^8.0.9+1
   flame_lint: ^1.2.0
