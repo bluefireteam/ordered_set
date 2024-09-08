@@ -1,4 +1,4 @@
-class ComparableObject extends Comparable<ComparableObject> {
+class ComparableObject implements Comparable<ComparableObject> {
   int priority;
   String name;
 
