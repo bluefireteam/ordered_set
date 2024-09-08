@@ -72,7 +72,13 @@ class OrderedSet<E> extends IterableMixin<E> {
 
   /// Adds each element of the provided [elements] to this and returns the
   /// number of elements added.
-  int addAll(Iterable<E> elements) => elements.map(add).where((e) => e).length;
+  int addAll(Iterable<E> elements) {
+    final lengthBefore = _length;
+    for (final element in elements) {
+      add(element);
+    }
+    return _length - lengthBefore;
+  }
 
   /// Adds the element [e] to this, and returns whether the element was
   /// added or not. If the element already exists in the collection, it isn't
@@ -128,6 +134,9 @@ class OrderedSet<E> extends IterableMixin<E> {
   Iterable<E> removeAll(Iterable<E> elements) {
     return elements.where(remove).toList(growable: false);
   }
+
+  /// Removes the element at [index].
+  bool removeAt(int index) => remove(elementAt(index));
 
   /// Remove a single element that is equal to [e].
   ///
