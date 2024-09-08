@@ -129,6 +129,9 @@ class OrderedSet<E> extends IterableMixin<E> {
     return elements.where(remove).toList(growable: false);
   }
 
+  /// Removes the element at [index].
+  bool removeAt(int index) => remove(elementAt(index));
+
   /// Remove a single element that is equal to [e].
   ///
   /// If there are multiple elements identical to [e], only the first will be
