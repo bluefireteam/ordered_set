@@ -59,7 +59,7 @@ class OrderedSet<E> extends IterableMixin<E> {
 
   @override
   Iterator<E> get iterator {
-    return _backingSet.expand<E>((es) => es).iterator;
+    return _OrderedSetIterator<E>(this);
   }
 
   /// The tree's elements in reversed order, cached when possible.
@@ -177,5 +177,32 @@ class OrderedSet<E> extends IterableMixin<E> {
     _validReverseCache = false;
     _backingSet.clear();
     _length = 0;
+  }
+}
+
+class _OrderedSetIterator<E> implements Iterator<E> {
+  final Iterator<Set<E>> _iterator;
+  Iterator<E>? _innerIterator;
+
+  _OrderedSetIterator(OrderedSet<E> orderedSet)
+      : _iterator = orderedSet._backingSet.iterator;
+
+  @override
+  E get current => _innerIterator!.current;
+
+  @pragma('vm:prefer-inline')
+  @pragma('wasm:prefer-inline')
+  @override
+  bool moveNext() {
+    if (_innerIterator?.moveNext() != true) {
+      final result = _iterator.moveNext();
+
+      if (result) {
+        _innerIterator = _iterator.current.iterator..moveNext();
+      }
+
+      return result;
+    }
+    return true;
   }
 }
