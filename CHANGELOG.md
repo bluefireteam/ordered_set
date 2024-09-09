@@ -1,3 +1,9 @@
+## 6.1.0
+
+- Add `elementAt` method, which returns the element at a certain index.
+- Add benchmark harness skeleton.
+- Optimize iterator by using a custom iterator.
+
 ## 6.0.1
 
 - Use cached results in `whereType()` when available, making `whereType()` 
@@ -12,7 +18,7 @@
 ## 5.0.3
 
 - Fix bug with sorting after removal of element in root bucket
- 
+
 ## 5.0.2
 
 - Fix bug with sorting after removal of element that leaves a bucket empty
