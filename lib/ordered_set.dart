@@ -197,11 +197,12 @@ class _OrderedSetIterator<E> implements Iterator<E> {
     if (_innerIterator?.moveNext() != true) {
       final result = _iterator.moveNext();
 
-      if (result) {
-        _innerIterator = _iterator.current.iterator..moveNext();
+      if (!result) {
+        return false;
       }
 
-      return result;
+      _innerIterator = _iterator.current.iterator;
+      return _innerIterator.moveNext();
     }
     return true;
   }
