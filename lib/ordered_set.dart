@@ -202,7 +202,7 @@ class _OrderedSetIterator<E> implements Iterator<E> {
       }
 
       _innerIterator = _iterator.current.iterator;
-      return _innerIterator.moveNext();
+      return _innerIterator!.moveNext();
     }
     return true;
   }
