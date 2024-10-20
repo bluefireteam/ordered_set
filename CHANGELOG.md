@@ -1,3 +1,7 @@
+## 6.1.1
+
+- Fix bug if inner sub set is empty causing null pointer exception.
+
 ## 6.1.0
 
 - Add `elementAt` method, which returns the element at a certain index.
