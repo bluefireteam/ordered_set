@@ -84,6 +84,14 @@ class OrderedSet<E> extends IterableMixin<E> {
   /// added or not. If the element already exists in the collection, it isn't
   /// added.
   bool add(E e) {
+    void consume(E e) {
+      // no-op
+    }
+    final elements = _backingSet.map((e) => e.toList()).expand((e) => e);
+    for (final el in elements) {
+      consume(el);
+    }
+
     final elementSet = {e};
     var added = _backingSet.add(elementSet);
     final isRootSet = added;
