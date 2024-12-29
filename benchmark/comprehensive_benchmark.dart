@@ -4,8 +4,9 @@ import 'package:benchmark_harness/benchmark_harness.dart';
 import 'package:ordered_set/comparing.dart';
 import 'package:ordered_set/ordered_set.dart';
 
-const _maxStartingOperations = 1000;
-const _maxElement = 1000;
+const _maxOperations = 2500;
+const _maxElement = 10000;
+const _startingSetSize = 500;
 
 class ComprehensiveBenchmark extends BenchmarkBase {
   final Random r;
@@ -67,15 +68,22 @@ class _Runtime {
   }
 
   void iterate() {
-    while (_totalOperations == 0 || _queue.isNotEmpty) {
-      if (_totalOperations < _maxStartingOperations) {
-        for (var i = 0; i < r.nextInt(3) + 2; i++) {
-          _queueOp(_randomOperation());
-        }
-      }
+    _populateSet();
 
+    while (_totalOperations < _maxOperations) {
+      final operation = _randomOperation();
+      _queueOp(operation);
+    }
+
+    while (_queue.isNotEmpty) {
       final op = _queue.removeAt(0);
       op.execute(this, _set).forEach(_queueOp);
+    }
+  }
+
+  void _populateSet() {
+    for (var i = 0; i < _startingSetSize; i++) {
+      _queueOp(_AddOperation(_randomElement()));
     }
   }
 
