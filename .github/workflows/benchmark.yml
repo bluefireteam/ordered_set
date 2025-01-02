@@ -14,5 +14,6 @@ jobs:
     - uses: luanpotter/dart-benchmark-action@v0.1.10
       with:
         paths: "."
+        ignore-tag: "no-benchmark"
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
