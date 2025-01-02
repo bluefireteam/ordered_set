@@ -4,9 +4,9 @@ import 'package:benchmark_harness/benchmark_harness.dart';
 import 'package:ordered_set/comparing.dart';
 import 'package:ordered_set/ordered_set.dart';
 
-const _maxOperations = 2500;
+const _maxOperations = 1000;
 const _maxElement = 10000;
-const _startingSetSize = 500;
+const _startingSetSize = 250;
 
 class ComprehensiveBenchmark extends BenchmarkBase {
   final Random r;
@@ -77,13 +77,13 @@ class _Runtime {
 
     while (_queue.isNotEmpty) {
       final op = _queue.removeAt(0);
-      op.execute(this, _set).forEach(_queueOp);
+      op.$1.execute(op, this, _set).forEach(_queueOp);
     }
   }
 
   void _populateSet() {
     for (var i = 0; i < _startingSetSize; i++) {
-      _queueOp(_AddOperation(_randomElement()));
+      _queueOp((_OperationType.add, _randomElement()));
     }
   }
 
@@ -94,27 +94,30 @@ class _Runtime {
 
   _Operation _randomOperation() {
     final type = _OperationType.values[r.nextInt(_OperationType.values.length)];
+    const noop = (_OperationType.noop, 0);
     switch (type) {
+      case _OperationType.noop:
+        return noop;
       case _OperationType.add:
-        return _AddOperation(_randomElement());
+        return (type, _randomElement());
       case _OperationType.removeIdx:
         if (_set.isEmpty) {
-          return _AddOperation(_randomElement());
+          return noop;
         }
-        return _RemoveIdxOperation(r.nextInt(_set.length));
+        return (type, r.nextInt(_set.length));
       case _OperationType.removeElement:
         if (_set.isEmpty) {
-          return _AddOperation(_randomElement());
+          return noop;
         }
-        return _RemoveElementOperation(_set.elementAt(r.nextInt(_set.length)));
+        return (type, _set.elementAt(r.nextInt(_set.length)));
       case _OperationType.removeWhere:
-        return _RemoveWhereOperation(_randomElement());
+        return (type, _randomElement());
       case _OperationType.visit:
-        return _VisitOperation(_randomElement());
+        return (type, _randomElement());
       case _OperationType.iterateThenAdd:
-        return _IterateThenAddOperation(_randomElement());
+        return (type, _randomElement());
       case _OperationType.iterateThenRemove:
-        return _IterateThenRemoveOperation(_randomElement());
+        return (type, _randomElement());
     }
   }
 
@@ -122,137 +125,125 @@ class _Runtime {
 }
 
 enum _OperationType {
+  noop(_noopOperation),
   // when queued, generates a random element; then adds using `add`
-  add,
+  add(_addOperation),
   // when queued, selects a random index; then removes using `removeAt`
-  removeIdx,
+  removeIdx(_removeIdxOperation),
   // when queued, selects a random element; then removes using `remove`
-  removeElement,
+  removeElement(_removeOperation),
   // when queued, generates a random factor; then removes all elements with
   // that factor using `removeWhere`
-  removeWhere,
+  removeWhere(_removeWhereOperation),
   // when queued, generates a random factor; then finds the elements matching
   // that factor, using normal for iteration
-  visit,
+  visit(_visitOperation),
   // when queued, generates two random factors; iterates over the set,
   //finds elements that match the first factor, then multiplies them by
   //the second factor, queue adding the results with the `add` operation
-  iterateThenAdd,
+  iterateThenAdd(_iterateThenAddOperation),
   // when queued, generates a random factor; iterates over the set, finding
   // elements that match the factor, then queue their removal with
   // the `removeElement` operation
-  iterateThenRemove,
+  iterateThenRemove(_iterateThenRemoveOperation),
+  ;
+
+  final List<_Operation> Function(_Operation, _Runtime, OrderedSet<int>)
+      execute;
+
+  const _OperationType(this.execute);
 }
 
-abstract class _Operation {
-  final _OperationType type;
+typedef _Operation = (_OperationType, int);
 
-  const _Operation(this.type);
-
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set);
+List<_Operation> _noopOperation(
+  _Operation operation,
+  _Runtime runtime,
+  OrderedSet<int> set,
+) {
+  return [];
 }
 
-class _AddOperation extends _Operation {
-  final int element;
+List<_Operation> _addOperation(
+  _Operation operation,
+  _Runtime runtime,
+  OrderedSet<int> set,
+) {
+  set.add(operation.$2);
+  return [];
+}
 
-  _AddOperation(this.element) : super(_OperationType.add);
+List<_Operation> _removeOperation(
+  _Operation operation,
+  _Runtime runtime,
+  OrderedSet<int> set,
+) {
+  set.remove(operation.$2);
+  return [];
+}
 
-  @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    set.add(element);
+List<_Operation> _removeIdxOperation(
+  _Operation operation,
+  _Runtime runtime,
+  OrderedSet<int> set,
+) {
+  if (set.isEmpty) {
     return [];
   }
+  set.removeAt(operation.$2);
+  return [];
 }
 
-class _RemoveIdxOperation extends _Operation {
-  final int index;
+List<_Operation> _removeWhereOperation(
+  _Operation operation,
+  _Runtime runtime,
+  OrderedSet<int> set,
+) {
+  set.removeWhere((e) => e % operation.$2 == 0);
+  return [];
+}
 
-  _RemoveIdxOperation(this.index) : super(_OperationType.removeIdx);
-
-  @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    if (index < set.length) {
-      set.removeAt(index);
+List<_Operation> _visitOperation(
+  _Operation operation,
+  _Runtime runtime,
+  OrderedSet<int> set,
+) {
+  final output = <_Operation>[];
+  for (final e in set) {
+    if (e % operation.$2 == 0) {
+      output.add((_OperationType.add, e * operation.$2));
     }
-    return [];
   }
+  return output;
 }
 
-class _RemoveElementOperation extends _Operation {
-  final int element;
-
-  _RemoveElementOperation(this.element) : super(_OperationType.removeElement);
-
-  @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    set.remove(element);
-    return [];
-  }
-}
-
-class _RemoveWhereOperation extends _Operation {
-  final int factor;
-
-  _RemoveWhereOperation(this.factor) : super(_OperationType.removeWhere);
-
-  @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    set.removeWhere((e) => e % factor == 0);
-    return [];
-  }
-}
-
-class _VisitOperation extends _Operation {
-  final int factor;
-
-  _VisitOperation(this.factor) : super(_OperationType.visit);
-
-  @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    final output = <_Operation>[];
-    for (final e in set) {
-      if (e % factor == 0) {
-        output.add(_AddOperation(e * factor));
-      }
+List<_Operation> _iterateThenAddOperation(
+  _Operation operation,
+  _Runtime runtime,
+  OrderedSet<int> set,
+) {
+  final toAdd = <int>[];
+  for (final e in set) {
+    if (e % operation.$2 == 0) {
+      toAdd.add(e);
     }
-    return output;
   }
+
+  return toAdd.map((e) => (_OperationType.add, e)).toList();
 }
 
-class _IterateThenAddOperation extends _Operation {
-  final int factor;
-
-  _IterateThenAddOperation(this.factor) : super(_OperationType.iterateThenAdd);
-
-  @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    final toAdd = <int>[];
-    for (final e in set) {
-      if (e % factor == 0) {
-        toAdd.add(e);
-      }
+List<_Operation> _iterateThenRemoveOperation(
+  _Operation operation,
+  _Runtime runtime,
+  OrderedSet<int> set,
+) {
+  final toRemove = <int>[];
+  for (final e in set) {
+    if (e % operation.$2 == 0) {
+      toRemove.add(e);
     }
-
-    return toAdd.map(_AddOperation.new).toList();
   }
-}
-
-class _IterateThenRemoveOperation extends _Operation {
-  final int factor;
-
-  _IterateThenRemoveOperation(this.factor)
-      : super(_OperationType.iterateThenRemove);
-
-  @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    final toRemove = <int>[];
-    for (final e in set) {
-      if (e % factor == 0) {
-        toRemove.add(e);
-      }
-    }
-    return toRemove.map(_RemoveElementOperation.new).toList();
-  }
+  return toRemove.map((e) => (_OperationType.removeElement, e)).toList();
 }
 
 int _countFactors(int initialValue, int factor) {
