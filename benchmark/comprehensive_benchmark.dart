@@ -96,27 +96,27 @@ class _Runtime {
     final type = _OperationType.values[r.nextInt(_OperationType.values.length)];
     const noop = (_OperationType.noop, 0);
     switch (type) {
-      case _OperationType.noop:
+      case _NoOp():
         return noop;
-      case _OperationType.add:
+      case _AddOp():
         return (type, _randomElement());
-      case _OperationType.removeIdx:
+      case _RemoveIdxOp():
         if (_set.isEmpty) {
           return noop;
         }
         return (type, r.nextInt(_set.length));
-      case _OperationType.removeElement:
+      case _RemoveElementOp():
         if (_set.isEmpty) {
           return noop;
         }
         return (type, _set.elementAt(r.nextInt(_set.length)));
-      case _OperationType.removeWhere:
+      case _RemoveWhereOp():
         return (type, _randomElement());
-      case _OperationType.visit:
+      case _VisitOp():
         return (type, _randomElement());
-      case _OperationType.iterateThenAdd:
+      case _IterateThenAddOp():
         return (type, _randomElement());
-      case _OperationType.iterateThenRemove:
+      case _IterateThenRemoveOp():
         return (type, _randomElement());
     }
   }
@@ -124,127 +124,179 @@ class _Runtime {
   int _randomElement() => r.nextInt(_maxElement) + 1;
 }
 
-enum _OperationType {
-  noop(_noopOperation),
-  // when queued, generates a random element; then adds using `add`
-  add(_addOperation),
-  // when queued, selects a random index; then removes using `removeAt`
-  removeIdx(_removeIdxOperation),
-  // when queued, selects a random element; then removes using `remove`
-  removeElement(_removeOperation),
-  // when queued, generates a random factor; then removes all elements with
-  // that factor using `removeWhere`
-  removeWhere(_removeWhereOperation),
-  // when queued, generates a random factor; then finds the elements matching
-  // that factor, using normal for iteration
-  visit(_visitOperation),
-  // when queued, generates two random factors; iterates over the set,
-  //finds elements that match the first factor, then multiplies them by
-  //the second factor, queue adding the results with the `add` operation
-  iterateThenAdd(_iterateThenAddOperation),
-  // when queued, generates a random factor; iterates over the set, finding
-  // elements that match the factor, then queue their removal with
-  // the `removeElement` operation
-  iterateThenRemove(_iterateThenRemoveOperation),
-  ;
+sealed class _OperationType {
+  static const noop = _NoOp();
+  static const add = _AddOp();
+  static const removeIdx = _RemoveIdxOp();
+  static const removeElement = _RemoveElementOp();
+  static const removeWhere = _RemoveWhereOp();
+  static const visit = _VisitOp();
+  static const iterateThenAdd = _IterateThenAddOp();
+  static const iterateThenRemove = _IterateThenRemoveOp();
 
-  final List<_Operation> Function(_Operation, _Runtime, OrderedSet<int>)
-      execute;
+  static const values = [
+    noop,
+    add,
+    removeIdx,
+    removeElement,
+    removeWhere,
+    visit,
+    iterateThenAdd,
+    iterateThenRemove,
+  ];
 
-  const _OperationType(this.execute);
+  const _OperationType();
+
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  );
+}
+
+/// Just placeholder to return an operation when none is desired.
+class _NoOp extends _OperationType {
+  const _NoOp();
+
+  @override
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    return [];
+  }
+}
+
+/// When queued, generates a random element; then adds using `add`.
+class _AddOp extends _OperationType {
+  const _AddOp();
+
+  @override
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    set.add(operation.$2);
+    return [];
+  }
+}
+
+/// When queued, selects a random index; then removes using `removeAt`.
+class _RemoveIdxOp extends _OperationType {
+  const _RemoveIdxOp();
+
+  @override
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    if (set.isEmpty) {
+      return [];
+    }
+    set.removeAt(operation.$2);
+    return [];
+  }
+}
+
+/// When queued, selects a random element; then removes using `remove`.
+class _RemoveElementOp extends _OperationType {
+  const _RemoveElementOp();
+
+  @override
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    set.remove(operation.$2);
+    return [];
+  }
+}
+
+/// When queued, generates a random factor; then removes all elements with
+/// that factor using `removeWhere`.
+class _RemoveWhereOp extends _OperationType {
+  const _RemoveWhereOp();
+
+  @override
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    set.removeWhere((e) => e % operation.$2 == 0);
+    return [];
+  }
+}
+
+/// When queued, generates a random factor; then finds the elements matching
+/// that factor, using normal for iteration.
+class _VisitOp extends _OperationType {
+  const _VisitOp();
+
+  @override
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    final output = <_Operation>[];
+    for (final e in set) {
+      if (e % operation.$2 == 0) {
+        output.add((_OperationType.add, e * operation.$2));
+      }
+    }
+    return output;
+  }
+}
+
+/// When queued, generates two random factors; iterates over the set,
+/// finds elements that match the first factor, then multiplies them by
+/// the second factor, queue adding the results with the `add` operation
+class _IterateThenAddOp extends _OperationType {
+  const _IterateThenAddOp();
+  @override
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    final output = <_Operation>[];
+    for (final e in set) {
+      if (e % operation.$2 == 0) {
+        output.add((_OperationType.add, e * operation.$2));
+      }
+    }
+    return output;
+  }
+}
+
+/// When queued, generates a random factor; iterates over the set, finding
+/// elements that match the factor, then queue their removal with
+/// the `removeElement` operation.
+class _IterateThenRemoveOp extends _OperationType {
+  const _IterateThenRemoveOp();
+
+  @override
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    final output = <_Operation>[];
+    for (final e in set) {
+      if (e % operation.$2 == 0) {
+        output.add((_OperationType.removeElement, e));
+      }
+    }
+    return output;
+  }
 }
 
 typedef _Operation = (_OperationType, int);
-
-List<_Operation> _noopOperation(
-  _Operation operation,
-  _Runtime runtime,
-  OrderedSet<int> set,
-) {
-  return [];
-}
-
-List<_Operation> _addOperation(
-  _Operation operation,
-  _Runtime runtime,
-  OrderedSet<int> set,
-) {
-  set.add(operation.$2);
-  return [];
-}
-
-List<_Operation> _removeOperation(
-  _Operation operation,
-  _Runtime runtime,
-  OrderedSet<int> set,
-) {
-  set.remove(operation.$2);
-  return [];
-}
-
-List<_Operation> _removeIdxOperation(
-  _Operation operation,
-  _Runtime runtime,
-  OrderedSet<int> set,
-) {
-  if (set.isEmpty) {
-    return [];
-  }
-  set.removeAt(operation.$2);
-  return [];
-}
-
-List<_Operation> _removeWhereOperation(
-  _Operation operation,
-  _Runtime runtime,
-  OrderedSet<int> set,
-) {
-  set.removeWhere((e) => e % operation.$2 == 0);
-  return [];
-}
-
-List<_Operation> _visitOperation(
-  _Operation operation,
-  _Runtime runtime,
-  OrderedSet<int> set,
-) {
-  final output = <_Operation>[];
-  for (final e in set) {
-    if (e % operation.$2 == 0) {
-      output.add((_OperationType.add, e * operation.$2));
-    }
-  }
-  return output;
-}
-
-List<_Operation> _iterateThenAddOperation(
-  _Operation operation,
-  _Runtime runtime,
-  OrderedSet<int> set,
-) {
-  final toAdd = <int>[];
-  for (final e in set) {
-    if (e % operation.$2 == 0) {
-      toAdd.add(e);
-    }
-  }
-
-  return toAdd.map((e) => (_OperationType.add, e)).toList();
-}
-
-List<_Operation> _iterateThenRemoveOperation(
-  _Operation operation,
-  _Runtime runtime,
-  OrderedSet<int> set,
-) {
-  final toRemove = <int>[];
-  for (final e in set) {
-    if (e % operation.$2 == 0) {
-      toRemove.add(e);
-    }
-  }
-  return toRemove.map((e) => (_OperationType.removeElement, e)).toList();
-}
 
 int _countFactors(int initialValue, int factor) {
   var count = 0;
