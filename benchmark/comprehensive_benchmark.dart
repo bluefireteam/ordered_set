@@ -4,9 +4,9 @@ import 'package:benchmark_harness/benchmark_harness.dart';
 import 'package:ordered_set/comparing.dart';
 import 'package:ordered_set/ordered_set.dart';
 
-const _maxOperations = 2500;
+const _maxOperations = 1000;
 const _maxElement = 10000;
-const _startingSetSize = 500;
+const _startingSetSize = 250;
 
 class ComprehensiveBenchmark extends BenchmarkBase {
   final Random r;
@@ -83,7 +83,7 @@ class _Runtime {
 
   void _populateSet() {
     for (var i = 0; i < _startingSetSize; i++) {
-      _queueOp(_AddOperation(_randomElement()));
+      _queueOp(_OperationType.add.create(_randomElement()));
     }
   }
 
@@ -93,165 +93,188 @@ class _Runtime {
   }
 
   _Operation _randomOperation() {
-    final type = _OperationType.values[r.nextInt(_OperationType.values.length)];
-    switch (type) {
-      case _OperationType.add:
-        return _AddOperation(_randomElement());
-      case _OperationType.removeIdx:
-        if (_set.isEmpty) {
-          return _AddOperation(_randomElement());
-        }
-        return _RemoveIdxOperation(r.nextInt(_set.length));
-      case _OperationType.removeElement:
-        if (_set.isEmpty) {
-          return _AddOperation(_randomElement());
-        }
-        return _RemoveElementOperation(_set.elementAt(r.nextInt(_set.length)));
-      case _OperationType.removeWhere:
-        return _RemoveWhereOperation(_randomElement());
-      case _OperationType.visit:
-        return _VisitOperation(_randomElement());
-      case _OperationType.iterateThenAdd:
-        return _IterateThenAddOperation(_randomElement());
-      case _OperationType.iterateThenRemove:
-        return _IterateThenRemoveOperation(_randomElement());
-    }
+    final type = _set.isEmpty
+        ? _OperationType.add
+        : _OperationType.values[r.nextInt(_OperationType.values.length)];
+    final value = switch (type) {
+      _AddOp() => _randomElement(),
+      _RemoveIdxOp() => r.nextInt(_set.length),
+      _RemoveElementOp() => _set.elementAt(r.nextInt(_set.length)),
+      _RemoveWhereOp() => _randomElement(),
+      _VisitOp() => _randomElement(),
+      _IterateThenAddOp() => _randomElement(),
+      _IterateThenRemoveOp() => _randomElement(),
+    };
+    return type.create(value);
   }
 
   int _randomElement() => r.nextInt(_maxElement) + 1;
 }
 
-enum _OperationType {
-  // when queued, generates a random element; then adds using `add`
-  add,
-  // when queued, selects a random index; then removes using `removeAt`
-  removeIdx,
-  // when queued, selects a random element; then removes using `remove`
-  removeElement,
-  // when queued, generates a random factor; then removes all elements with
-  // that factor using `removeWhere`
-  removeWhere,
-  // when queued, generates a random factor; then finds the elements matching
-  // that factor, using normal for iteration
-  visit,
-  // when queued, generates two random factors; iterates over the set,
-  //finds elements that match the first factor, then multiplies them by
-  //the second factor, queue adding the results with the `add` operation
-  iterateThenAdd,
-  // when queued, generates a random factor; iterates over the set, finding
-  // elements that match the factor, then queue their removal with
-  // the `removeElement` operation
-  iterateThenRemove,
+sealed class _OperationType {
+  static const add = _AddOp();
+  static const removeIdx = _RemoveIdxOp();
+  static const removeElement = _RemoveElementOp();
+  static const removeWhere = _RemoveWhereOp();
+  static const visit = _VisitOp();
+  static const iterateThenAdd = _IterateThenAddOp();
+  static const iterateThenRemove = _IterateThenRemoveOp();
+
+  static const values = [
+    add,
+    removeIdx,
+    removeElement,
+    removeWhere,
+    visit,
+    iterateThenAdd,
+    iterateThenRemove,
+  ];
+
+  const _OperationType();
+
+  _Operation create(int factor) => (type: this, value: factor);
+
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  );
 }
 
-abstract class _Operation {
-  final _OperationType type;
-
-  const _Operation(this.type);
-
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set);
-}
-
-class _AddOperation extends _Operation {
-  final int element;
-
-  _AddOperation(this.element) : super(_OperationType.add);
+/// When queued, generates a random element; then adds using `add`.
+class _AddOp extends _OperationType {
+  const _AddOp();
 
   @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    set.add(element);
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    set.add(operation.value);
     return [];
   }
 }
 
-class _RemoveIdxOperation extends _Operation {
-  final int index;
-
-  _RemoveIdxOperation(this.index) : super(_OperationType.removeIdx);
+/// When queued, selects a random index; then removes using `removeAt`.
+class _RemoveIdxOp extends _OperationType {
+  const _RemoveIdxOp();
 
   @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    if (index < set.length) {
-      set.removeAt(index);
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    if (set.isEmpty) {
+      return [];
     }
+    set.removeAt(operation.value);
     return [];
   }
 }
 
-class _RemoveElementOperation extends _Operation {
-  final int element;
-
-  _RemoveElementOperation(this.element) : super(_OperationType.removeElement);
+/// When queued, selects a random element; then removes using `remove`.
+class _RemoveElementOp extends _OperationType {
+  const _RemoveElementOp();
 
   @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    set.remove(element);
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    set.remove(operation.value);
     return [];
   }
 }
 
-class _RemoveWhereOperation extends _Operation {
-  final int factor;
-
-  _RemoveWhereOperation(this.factor) : super(_OperationType.removeWhere);
+/// When queued, generates a random factor; then removes all elements with
+/// that factor using `removeWhere`.
+class _RemoveWhereOp extends _OperationType {
+  const _RemoveWhereOp();
 
   @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    set.removeWhere((e) => e % factor == 0);
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    set.removeWhere((e) => e % operation.value == 0);
     return [];
   }
 }
 
-class _VisitOperation extends _Operation {
-  final int factor;
-
-  _VisitOperation(this.factor) : super(_OperationType.visit);
+/// When queued, generates a random factor; then finds the elements matching
+/// that factor, using normal for iteration.
+class _VisitOp extends _OperationType {
+  const _VisitOp();
 
   @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
     final output = <_Operation>[];
     for (final e in set) {
-      if (e % factor == 0) {
-        output.add(_AddOperation(e * factor));
+      if (e % operation.value == 0) {
+        output.add(_OperationType.add.create(e * operation.value));
       }
     }
     return output;
   }
 }
 
-class _IterateThenAddOperation extends _Operation {
-  final int factor;
-
-  _IterateThenAddOperation(this.factor) : super(_OperationType.iterateThenAdd);
+/// When queued, generates two random factors; iterates over the set,
+/// finds elements that match the first factor, then multiplies them by
+/// the second factor, queue adding the results with the `add` operation
+class _IterateThenAddOp extends _OperationType {
+  const _IterateThenAddOp();
 
   @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    final toAdd = <int>[];
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    final output = <_Operation>[];
     for (final e in set) {
-      if (e % factor == 0) {
-        toAdd.add(e);
+      if (e % operation.value == 0) {
+        output.add(_OperationType.add.create(e * operation.value));
       }
     }
-
-    return toAdd.map(_AddOperation.new).toList();
+    return output;
   }
 }
 
-class _IterateThenRemoveOperation extends _Operation {
-  final int factor;
-
-  _IterateThenRemoveOperation(this.factor)
-      : super(_OperationType.iterateThenRemove);
+/// When queued, generates a random factor; iterates over the set, finding
+/// elements that match the factor, then queue their removal with
+/// the `removeElement` operation.
+class _IterateThenRemoveOp extends _OperationType {
+  const _IterateThenRemoveOp();
 
   @override
-  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
-    final toRemove = <int>[];
+  List<_Operation> execute(
+    _Operation operation,
+    _Runtime runtime,
+    OrderedSet<int> set,
+  ) {
+    final output = <_Operation>[];
     for (final e in set) {
-      if (e % factor == 0) {
-        toRemove.add(e);
+      if (e % operation.value == 0) {
+        output.add(_OperationType.removeElement.create(e));
       }
     }
-    return toRemove.map(_RemoveElementOperation.new).toList();
+    return output;
+  }
+}
+
+typedef _Operation = ({_OperationType type, int value});
+
+extension on _Operation {
+  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
+    return type.execute(this, runtime, set);
   }
 }
 

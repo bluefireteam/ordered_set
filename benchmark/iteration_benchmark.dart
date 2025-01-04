@@ -5,6 +5,8 @@ import 'package:ordered_set/ordered_set.dart';
 
 import '../test/comparable_object.dart';
 
+const _iterationAmount = 1000;
+
 class IterationBenchmark extends BenchmarkBase {
   late final OrderedSet<ComparableObject> set;
 
@@ -17,7 +19,7 @@ class IterationBenchmark extends BenchmarkBase {
   @override
   void setup() {
     set = OrderedSet();
-    for (var i = 0; i < 1000; i++) {
+    for (var i = 0; i < _iterationAmount; i++) {
       final l = (10 + sqrt(i)).floor();
       for (var j = 0; j <= l; j++) {
         set.add(ComparableObject(i, '$i-$j'));
