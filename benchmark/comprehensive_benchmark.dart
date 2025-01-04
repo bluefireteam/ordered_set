@@ -94,8 +94,8 @@ class _Runtime {
 
   _Operation _randomOperation() {
     final type = _set.isEmpty
-              ? _OperationType.add
-              : _OperationType.values[r.nextInt(_OperationType.values.length)];
+        ? _OperationType.add
+        : _OperationType.values[r.nextInt(_OperationType.values.length)];
     final value = switch (type) {
       _AddOp() => _randomElement(),
       _RemoveIdxOp() => r.nextInt(_set.length),
