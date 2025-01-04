@@ -77,13 +77,13 @@ class _Runtime {
 
     while (_queue.isNotEmpty) {
       final op = _queue.removeAt(0);
-      op.$1.execute(op, this, _set).forEach(_queueOp);
+      op.execute(this, _set).forEach(_queueOp);
     }
   }
 
   void _populateSet() {
     for (var i = 0; i < _startingSetSize; i++) {
-      _queueOp((_OperationType.add, _randomElement()));
+      _queueOp(_OperationType.add.create(_randomElement()));
     }
   }
 
@@ -93,39 +93,25 @@ class _Runtime {
   }
 
   _Operation _randomOperation() {
-    final type = _OperationType.values[r.nextInt(_OperationType.values.length)];
-    const noop = (_OperationType.noop, 0);
-    switch (type) {
-      case _NoOp():
-        return noop;
-      case _AddOp():
-        return (type, _randomElement());
-      case _RemoveIdxOp():
-        if (_set.isEmpty) {
-          return noop;
-        }
-        return (type, r.nextInt(_set.length));
-      case _RemoveElementOp():
-        if (_set.isEmpty) {
-          return noop;
-        }
-        return (type, _set.elementAt(r.nextInt(_set.length)));
-      case _RemoveWhereOp():
-        return (type, _randomElement());
-      case _VisitOp():
-        return (type, _randomElement());
-      case _IterateThenAddOp():
-        return (type, _randomElement());
-      case _IterateThenRemoveOp():
-        return (type, _randomElement());
-    }
+    final type = _set.isEmpty
+              ? _OperationType.add
+              : _OperationType.values[r.nextInt(_OperationType.values.length)];
+    final value = switch (type) {
+      _AddOp() => _randomElement(),
+      _RemoveIdxOp() => r.nextInt(_set.length),
+      _RemoveElementOp() => _set.elementAt(r.nextInt(_set.length)),
+      _RemoveWhereOp() => _randomElement(),
+      _VisitOp() => _randomElement(),
+      _IterateThenAddOp() => _randomElement(),
+      _IterateThenRemoveOp() => _randomElement(),
+    };
+    return type.create(value);
   }
 
   int _randomElement() => r.nextInt(_maxElement) + 1;
 }
 
 sealed class _OperationType {
-  static const noop = _NoOp();
   static const add = _AddOp();
   static const removeIdx = _RemoveIdxOp();
   static const removeElement = _RemoveElementOp();
@@ -135,7 +121,6 @@ sealed class _OperationType {
   static const iterateThenRemove = _IterateThenRemoveOp();
 
   static const values = [
-    noop,
     add,
     removeIdx,
     removeElement,
@@ -147,25 +132,13 @@ sealed class _OperationType {
 
   const _OperationType();
 
+  _Operation create(int factor) => (type: this, value: factor);
+
   List<_Operation> execute(
     _Operation operation,
     _Runtime runtime,
     OrderedSet<int> set,
   );
-}
-
-/// Just placeholder to return an operation when none is desired.
-class _NoOp extends _OperationType {
-  const _NoOp();
-
-  @override
-  List<_Operation> execute(
-    _Operation operation,
-    _Runtime runtime,
-    OrderedSet<int> set,
-  ) {
-    return [];
-  }
 }
 
 /// When queued, generates a random element; then adds using `add`.
@@ -178,7 +151,7 @@ class _AddOp extends _OperationType {
     _Runtime runtime,
     OrderedSet<int> set,
   ) {
-    set.add(operation.$2);
+    set.add(operation.value);
     return [];
   }
 }
@@ -196,7 +169,7 @@ class _RemoveIdxOp extends _OperationType {
     if (set.isEmpty) {
       return [];
     }
-    set.removeAt(operation.$2);
+    set.removeAt(operation.value);
     return [];
   }
 }
@@ -211,7 +184,7 @@ class _RemoveElementOp extends _OperationType {
     _Runtime runtime,
     OrderedSet<int> set,
   ) {
-    set.remove(operation.$2);
+    set.remove(operation.value);
     return [];
   }
 }
@@ -227,7 +200,7 @@ class _RemoveWhereOp extends _OperationType {
     _Runtime runtime,
     OrderedSet<int> set,
   ) {
-    set.removeWhere((e) => e % operation.$2 == 0);
+    set.removeWhere((e) => e % operation.value == 0);
     return [];
   }
 }
@@ -245,8 +218,8 @@ class _VisitOp extends _OperationType {
   ) {
     final output = <_Operation>[];
     for (final e in set) {
-      if (e % operation.$2 == 0) {
-        output.add((_OperationType.add, e * operation.$2));
+      if (e % operation.value == 0) {
+        output.add(_OperationType.add.create(e * operation.value));
       }
     }
     return output;
@@ -258,6 +231,7 @@ class _VisitOp extends _OperationType {
 /// the second factor, queue adding the results with the `add` operation
 class _IterateThenAddOp extends _OperationType {
   const _IterateThenAddOp();
+
   @override
   List<_Operation> execute(
     _Operation operation,
@@ -266,8 +240,8 @@ class _IterateThenAddOp extends _OperationType {
   ) {
     final output = <_Operation>[];
     for (final e in set) {
-      if (e % operation.$2 == 0) {
-        output.add((_OperationType.add, e * operation.$2));
+      if (e % operation.value == 0) {
+        output.add(_OperationType.add.create(e * operation.value));
       }
     }
     return output;
@@ -288,15 +262,21 @@ class _IterateThenRemoveOp extends _OperationType {
   ) {
     final output = <_Operation>[];
     for (final e in set) {
-      if (e % operation.$2 == 0) {
-        output.add((_OperationType.removeElement, e));
+      if (e % operation.value == 0) {
+        output.add(_OperationType.removeElement.create(e));
       }
     }
     return output;
   }
 }
 
-typedef _Operation = (_OperationType, int);
+typedef _Operation = ({_OperationType type, int value});
+
+extension on _Operation {
+  List<_Operation> execute(_Runtime runtime, OrderedSet<int> set) {
+    return type.execute(this, runtime, set);
+  }
+}
 
 int _countFactors(int initialValue, int factor) {
   var count = 0;
