@@ -1,4 +1,5 @@
 import 'package:ordered_set/comparing.dart';
+import 'package:ordered_set/ordered_set.dart';
 import 'package:ordered_set/queryable_ordered_set.dart';
 import 'package:test/test.dart';
 
@@ -19,12 +20,10 @@ class Cat extends Mammal {}
 class Cod extends Fish {}
 
 void main() {
-  group('QueryableOrderedSet', () {
+  group('QueryableOrderedSet - Comparable', () {
     group('#add and #query', () {
       test('registration is mandatory on strict mode', () {
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-        );
+        final orderedSet = _create();
 
         expect(
           () => orderedSet.query<Bird>(),
@@ -32,10 +31,7 @@ void main() {
         );
       });
       test('registration is optional with strict mode = false', () {
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-          strictMode: false,
-        );
+        final orderedSet = _create(strictMode: false);
         final bird = Bird()..name = 'Louise';
         final cod = Cod()..name = 'Leroy';
         orderedSet.addAll([bird, cod]);
@@ -56,9 +52,7 @@ void main() {
         final dog = Dog()..name = 'Joey';
         final bird = Bird()..name = 'Louise';
 
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-        );
+        final orderedSet = _create();
         orderedSet.register<Animal>();
         orderedSet.register<Dog>();
         orderedSet.register<Bird>();
@@ -77,9 +71,7 @@ void main() {
         final dog = Dog()..name = 'Joey';
         final bird = Bird()..name = 'Louise';
 
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-        );
+        final orderedSet = _create();
 
         orderedSet.add(dog);
         orderedSet.add(bird);
@@ -100,20 +92,15 @@ void main() {
         final fish = Fish()..name = 'Abigail';
         final cod = Cod()..name = 'Leroy';
 
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-        );
+        final orderedSet = _create();
 
         orderedSet.register<Animal>();
-
         orderedSet.add(dog);
 
         orderedSet.register<Mammal>();
-
         orderedSet.add(fish);
 
         orderedSet.register<Dog>();
-
         orderedSet.add(cod);
 
         orderedSet.register<Fish>();
@@ -133,9 +120,7 @@ void main() {
         final dog = Dog()..name = 'Joey';
         final bird = Bird()..name = 'Louise';
 
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-        );
+        final orderedSet = _create();
         orderedSet.register<Animal>();
         orderedSet.register<Dog>();
         orderedSet.register<Bird>();
@@ -161,9 +146,7 @@ void main() {
         final bird1 = Bird()..name = 'Louise';
         final bird2 = Bird()..name = 'Sally';
 
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-        );
+        final orderedSet = _create();
         orderedSet.register<Animal>();
         orderedSet.register<Mammal>();
         orderedSet.register<Dog>();
@@ -230,9 +213,7 @@ void main() {
         final bird1 = Bird()..name = 'Louise';
         final bird2 = Bird()..name = 'Sally';
 
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-        );
+        final orderedSet = _create();
         orderedSet.register<Animal>();
         orderedSet.register<Mammal>();
         orderedSet.register<Dog>();
@@ -252,9 +233,7 @@ void main() {
         expect(orderedSet.toList(), isEmpty);
       });
       test('#isRegistered', () {
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-        );
+        final orderedSet = _create();
         // No caches should be registered on a clean set
         expect(orderedSet.isRegistered<Animal>(), isFalse);
         expect(orderedSet.isRegistered<Mammal>(), isFalse);
@@ -282,9 +261,7 @@ void main() {
         final dog = Dog()..name = 'Joey';
         final bird = Bird()..name = 'Louise';
 
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-        );
+        final orderedSet = _create();
         orderedSet.register<Dog>();
 
         orderedSet.add(dog);
@@ -297,9 +274,7 @@ void main() {
         final dog = Dog()..name = 'Joey';
         final bird = Bird()..name = 'Louise';
 
-        final orderedSet = QueryableOrderedSet<Animal>(
-          comparator: Comparing.on((e) => e.name),
-        );
+        final orderedSet = _create();
         orderedSet.register<Dog>();
 
         orderedSet.add(dog);
@@ -314,4 +289,15 @@ void main() {
       });
     });
   });
+}
+
+QueryableOrderedSet<Animal> _create({
+  bool strictMode = true,
+}) {
+  return OrderedSet.queryable(
+    OrderedSet.comparing<Animal>(
+      Comparing.on((e) => e.name),
+    ),
+    strictMode: strictMode,
+  );
 }

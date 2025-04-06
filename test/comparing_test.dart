@@ -1,5 +1,5 @@
 import 'package:ordered_set/comparing.dart';
-import 'package:ordered_set/ordered_set.dart';
+import 'package:ordered_set/comparing_ordered_set.dart';
 import 'package:test/test.dart';
 
 import 'comparable_object.dart';
@@ -30,7 +30,9 @@ void main() {
         ]);
       });
       test('using complex object', () {
-        final set = OrderedSet<ComparableObject>(Comparing.on((o) => o.name));
+        final set = ComparingOrderedSet<ComparableObject>(
+          Comparing.on((o) => o.name),
+        );
         set.add(ComparableObject(0, 'd'));
         set.add(ComparableObject(1, 'b'));
         set.add(ComparableObject(2, 'a'));
@@ -53,7 +55,7 @@ void main() {
         final c = Comparing.reverse<ComparableObject>(
           Comparing.on((t) => t.name),
         );
-        final set = OrderedSet(c);
+        final set = ComparingOrderedSet(c);
         set.add(ComparableObject(0, 'd'));
         set.add(ComparableObject(1, 'b'));
         set.add(ComparableObject(2, 'a'));
@@ -68,7 +70,7 @@ void main() {
           (ComparableObject t) => t.priority,
           (ComparableObject t) => t.name,
         ]);
-        final set = OrderedSet(c);
+        final set = ComparingOrderedSet(c);
         set.add(ComparableObject(1, 'b'));
         set.add(ComparableObject(0, 'b'));
         set.add(ComparableObject(3, 'a'));

@@ -4,12 +4,12 @@ import 'package:ordered_set/comparing.dart';
 import 'package:ordered_set/ordered_set.dart';
 
 void main() {
-  final items = OrderedSet<int>();
+  final items = OrderedSet.comparing<int>();
   items.add(2);
   items.add(1);
   print(items.toList()); // [1, 2]
 
-  final a = OrderedSet<Person>((a, b) => a.age - b.age);
+  final a = OrderedSet.comparing<Person>((a, b) => a.age - b.age);
   a.add(Person(12, 'Klaus'));
   a.add(Person(1, 'Sunny'));
   a.add(Person(14, 'Violet'));
@@ -24,10 +24,18 @@ void main() {
 
   // use Comparing for simpler creation:
   // sort by age desc and then name asc
-  final b = OrderedSet<Person>(Comparing.join([(p) => -p.age, (p) => p.name]));
+  final b = OrderedSet.comparing<Person>(
+    Comparing.join([(p) => -p.age, (p) => p.name]),
+  );
   b.addAll(a.toList());
   print(b.toList().map((e) => e.name));
   // Violet, Duncan, Isadora, Quigley, Klaus, Sunny
+
+  // or use the PriorityOrderedSet for static priorities
+  final c = OrderedSet.mapping<num, Person>((p) => p.age);
+  c.addAll(a.toList());
+  print(c.toList().map((e) => e.name));
+  // Sunny, Klaus, Isadora, Duncan, Quigley, Violet
 }
 
 class Person {

@@ -1,23 +1,29 @@
+import 'dart:math';
+
 import 'package:benchmark_harness/benchmark_harness.dart';
 import 'package:ordered_set/ordered_set.dart';
 
-import '../test/comparable_object.dart';
+import '../../test/comparable_object.dart';
+import '../types.dart';
 
 const _iterationAmount = 1000;
 
 class InsertionAndRemovalBenchmark extends BenchmarkBase {
-  late final OrderedSet<ComparableObject> set;
+  final Random r;
+  final OrderedSet<ComparableObject> set;
   late final Map<int, ComparableObject> objects;
 
-  InsertionAndRemovalBenchmark() : super('Insertion and Removal Benchmark');
-
-  static void main() {
-    InsertionAndRemovalBenchmark().report();
-  }
+  InsertionAndRemovalBenchmark({
+    required String name,
+    required int seed,
+    required Producer<ComparableObject> producer,
+  })  : r = Random(seed),
+        set = producer((e) => e.priority),
+        objects = {},
+        super('Insertion and Removal Benchmark - $name');
 
   @override
   void setup() {
-    set = OrderedSet<ComparableObject>();
     objects = {
       for (var i = 0; i < _iterationAmount; i++) i: ComparableObject(i, '$i'),
     };

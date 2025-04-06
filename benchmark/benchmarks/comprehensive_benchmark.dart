@@ -1,8 +1,9 @@
 import 'dart:math';
 
 import 'package:benchmark_harness/benchmark_harness.dart';
-import 'package:ordered_set/comparing.dart';
 import 'package:ordered_set/ordered_set.dart';
+
+import '../types.dart';
 
 const _maxOperations = 1000;
 const _maxElement = 10000;
@@ -10,32 +11,31 @@ const _startingSetSize = 250;
 
 class ComprehensiveBenchmark extends BenchmarkBase {
   final Random r;
+  final Producer<int> producer;
   final _runtimes = <_Runtime>[];
 
   ComprehensiveBenchmark({
+    required String name,
     required int seed,
+    required this.producer,
   })  : r = Random(seed),
-        super('Comprehensive Benchmark');
-
-  static void main() {
-    ComprehensiveBenchmark(seed: 69420).report();
-  }
+        super('Comprehensive Benchmark - $name');
 
   @override
   void setup() {
     final primes = [2, 3, 5, 7, 11];
     _runtimes.clear();
     _runtimes.addAll(
-      [
+      <Mapper<int>>[
         // all elements have the same compare factor
-        Comparing.on<int>((e) => 0),
+        (e) => 0,
         // all elements are only equal to themselves
-        Comparing.on<int>((e) => e),
+        (e) => e,
         // equal by certain prime factor count
         ...primes.map(
-          (p) => Comparing.on<int>((e) => _countFactors(e, p)),
+          (p) => (e) => _countFactors(e, p),
         ),
-      ].map((e) => _Runtime(r: r, compare: e)),
+      ].map((e) => _Runtime(r: r, producer: producer, mapper: e)),
     );
   }
 
@@ -57,8 +57,9 @@ class _Runtime {
 
   _Runtime({
     required this.r,
-    required Comparator<int> compare,
-  })  : _set = OrderedSet<int>(compare),
+    required Producer<int> producer,
+    required Mapper<int> mapper,
+  })  : _set = producer(mapper),
         _queue = [];
 
   void clear() {
