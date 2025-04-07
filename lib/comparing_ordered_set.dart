@@ -58,7 +58,7 @@ class ComparingOrderedSet<E> extends OrderedSet<E> {
 
   @override
   Iterator<E> get iterator {
-    return _OrderedSetIterator<E>(this);
+    return _ComparingOrderedSetIterator<E>(this);
   }
 
   @override
@@ -133,11 +133,11 @@ class ComparingOrderedSet<E> extends OrderedSet<E> {
   }
 }
 
-class _OrderedSetIterator<E> implements Iterator<E> {
+class _ComparingOrderedSetIterator<E> implements Iterator<E> {
   final Iterator<Set<E>> _iterator;
   Iterator<E>? _innerIterator;
 
-  _OrderedSetIterator(ComparingOrderedSet<E> orderedSet)
+  _ComparingOrderedSetIterator(ComparingOrderedSet<E> orderedSet)
       : _iterator = orderedSet._backingSet.iterator;
 
   @override
@@ -155,7 +155,8 @@ class _OrderedSetIterator<E> implements Iterator<E> {
       }
 
       _innerIterator = _iterator.current.iterator;
-      return _innerIterator!.moveNext();
+      _innerIterator!.moveNext();
+      return true;
     }
     return true;
   }

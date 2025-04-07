@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:ordered_set/ordered_set.dart';
 import 'package:test/test.dart';
 
@@ -35,14 +37,7 @@ void main() {
         e1.priority = 2;
         // no rebalance! note that this is a broken state until rebalance is
         // called.
-
-        // cannot find because of the priority diff
-        // this is the key difference of PriorityOrderedSet
-        expect(a.remove(e1), isFalse);
-
-        a.rebalanceWhere((e) => e == e1);
         expect(a.remove(e1), isTrue);
-
         expect(a.toList().join(), 'e2e3e4');
       });
 
@@ -385,6 +380,69 @@ void main() {
         orderedSet.rebalanceAll();
         expect(orderedSet.toList().join(), 'cdab');
       });
+
+      test(
+        'async rebalance, add and remove have no race condition',
+        () async {
+          final r = Random(69420);
+          final operationQueue = <void Function()>[];
+          final orderedSet = OrderedSet.mapping<num, ComparableObject>(
+            (ComparableObject e) => e.priority,
+          );
+          for (var i = 0; i < 10; i++) {
+            operationQueue.add(() {
+              orderedSet.add(ComparableObject(0, 'green-$i'));
+            });
+          }
+
+          Future<void> add() async {
+            final white = ComparableObject(0, 'white');
+            operationQueue.add(() {
+              orderedSet.add(white);
+            });
+            await Future.delayed(
+              const Duration(milliseconds: 300),
+              () => operationQueue.add(() {
+                orderedSet.removeWhere((e) => e == white);
+              }),
+            );
+          }
+
+          Future<void> rebalance() async {
+            orderedSet.forEach((it) {
+              operationQueue.add(() {
+                it.priority = r.nextInt(1000);
+              });
+            });
+          }
+
+          var completed = 0;
+          var total = 0;
+          void waitFor(int milliseconds, Future<void> Function() fn) {
+            total++;
+            Future.delayed(Duration(milliseconds: milliseconds), fn)
+                .whenComplete(() => completed++);
+          }
+
+          Future<void> start() async {
+            for (var i = 0; i < 100; i++) {
+              waitFor(17 * i, rebalance);
+              waitFor(31 * i, add);
+            }
+          }
+
+          waitFor(0, start);
+
+          while (completed < total || operationQueue.isNotEmpty) {
+            while (operationQueue.isNotEmpty) {
+              operationQueue.removeAt(0)();
+            }
+            await Future<void>.delayed(const Duration(milliseconds: 1));
+          }
+
+          expect(orderedSet.length, 10);
+        },
+      );
     });
 
     group('reversed', () {
