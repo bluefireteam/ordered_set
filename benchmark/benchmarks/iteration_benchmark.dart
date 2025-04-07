@@ -22,6 +22,7 @@ class IterationBenchmark extends BenchmarkBase {
 
   @override
   void setup() {
+    set.clear();
     for (var i = 0; i < _iterationAmount; i++) {
       final l = (10 + sqrt(i)).floor();
       for (var j = 0; j <= l; j++) {

@@ -11,7 +11,7 @@ const _iterationAmount = 1000;
 class InsertionAndRemovalBenchmark extends BenchmarkBase {
   final Random r;
   final OrderedSet<ComparableObject> set;
-  late final Map<int, ComparableObject> objects;
+  final Map<int, ComparableObject> objects;
 
   InsertionAndRemovalBenchmark({
     required String name,
@@ -24,9 +24,11 @@ class InsertionAndRemovalBenchmark extends BenchmarkBase {
 
   @override
   void setup() {
-    objects = {
+    objects.clear();
+    objects.addAll({
       for (var i = 0; i < _iterationAmount; i++) i: ComparableObject(i, '$i'),
-    };
+    });
+    set.clear();
   }
 
   @override
