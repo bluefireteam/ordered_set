@@ -1,14 +1,15 @@
 import 'dart:collection';
 
+import 'package:ordered_set/mapping_ordered_set.dart';
 import 'package:ordered_set/ordered_set.dart';
-import 'package:ordered_set/priority_ordered_set.dart';
+import 'package:ordered_set/ordered_set_iterator.dart';
 
 /// A simple implementation of [OrderedSet] that uses a [SplayTreeSet] as the
 /// backing store.
 ///
 /// This does not store the elements priorities, so it is susceptible to race
 /// conditions if priorities are changed while iterating.
-/// For a safer implementation, use [PriorityOrderedSet].
+/// For a safer implementation, use [MappingOrderedSet].
 class ComparingOrderedSet<E> extends OrderedSet<E> {
   // If the default implementation of `Set` changes from `LinkedHashSet` to
   // something else that isn't ordered we'll have to change this to explicitly
@@ -58,7 +59,7 @@ class ComparingOrderedSet<E> extends OrderedSet<E> {
 
   @override
   Iterator<E> get iterator {
-    return _ComparingOrderedSetIterator<E>(this);
+    return OrderedSetIterator.from(_backingSet.iterator);
   }
 
   @override
@@ -130,34 +131,5 @@ class ComparingOrderedSet<E> extends OrderedSet<E> {
     _validReverseCache = false;
     _backingSet.clear();
     _length = 0;
-  }
-}
-
-class _ComparingOrderedSetIterator<E> implements Iterator<E> {
-  final Iterator<Set<E>> _iterator;
-  Iterator<E>? _innerIterator;
-
-  _ComparingOrderedSetIterator(ComparingOrderedSet<E> orderedSet)
-      : _iterator = orderedSet._backingSet.iterator;
-
-  @override
-  E get current => _innerIterator!.current;
-
-  @pragma('vm:prefer-inline')
-  @pragma('wasm:prefer-inline')
-  @override
-  bool moveNext() {
-    if (_innerIterator?.moveNext() != true) {
-      final result = _iterator.moveNext();
-
-      if (!result) {
-        return false;
-      }
-
-      _innerIterator = _iterator.current.iterator;
-      _innerIterator!.moveNext();
-      return true;
-    }
-    return true;
   }
 }

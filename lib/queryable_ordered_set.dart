@@ -1,15 +1,5 @@
 import 'package:ordered_set/ordered_set.dart';
 
-class _CacheEntry<C, T> {
-  final List<C> data;
-
-  _CacheEntry({required this.data});
-
-  bool check(T t) {
-    return t is C;
-  }
-}
-
 /// This is an implementation of [OrderedSet] that allows you to more
 /// efficiently [query] the list.
 ///
@@ -150,4 +140,14 @@ class QueryableOrderedSet<E> extends OrderedSet<E> {
   }
 
   List<C> _filter<C extends E>() => whereType<C>().toList();
+}
+
+class _CacheEntry<C, T> {
+  final List<C> data;
+
+  _CacheEntry({required this.data});
+
+  bool check(T t) {
+    return t is C;
+  }
 }

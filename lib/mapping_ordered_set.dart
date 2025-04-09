@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:ordered_set/comparing_ordered_set.dart';
 import 'package:ordered_set/ordered_set.dart';
+import 'package:ordered_set/ordered_set_iterator.dart';
 
 /// A simple implementation of [OrderedSet] that uses a [SplayTreeMap] as the
 /// backing store.
@@ -9,15 +10,15 @@ import 'package:ordered_set/ordered_set.dart';
 /// This allows it to keep a cache of elements priorities, so they can be used
 /// changed without rebalancing.
 /// For an alternative implementation, use [ComparingOrderedSet].
-class PriorityOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
-  final K Function(E a) _priorityFunction;
+class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
+  final K Function(E a) _mappingFunction;
   late SplayTreeMap<K, Set<E>> _backingSet;
   late int _length;
 
   bool _validReverseCache = true;
   Iterable<E> _reverseCache = const Iterable.empty();
 
-  PriorityOrderedSet(this._priorityFunction) {
+  MappingOrderedSet(this._mappingFunction) {
     _backingSet = SplayTreeMap((K k1, K k2) {
       return k1.compareTo(k2);
     });
@@ -29,7 +30,7 @@ class PriorityOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
 
   @override
   Iterator<E> get iterator {
-    return _PriorityOrderedSetIterator<K, E>(this);
+    return OrderedSetIterator.from(_backingSet.values.iterator);
   }
 
   @override
@@ -42,7 +43,7 @@ class PriorityOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
 
   @override
   bool add(E e) {
-    final elementPriority = _priorityFunction(e);
+    final elementPriority = _mappingFunction(e);
     final innerSet = _backingSet.putIfAbsent(elementPriority, () => <E>{});
     final added = innerSet.add(e);
     if (added) {
@@ -67,7 +68,7 @@ class PriorityOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
 
   @override
   bool remove(E e) {
-    K? key = _priorityFunction(e);
+    K? key = _mappingFunction(e);
     var bucket = _backingSet[key];
     if (bucket == null || !bucket.contains(e)) {
       // We need a fallback in case [e] has changed and it's no longer found by
@@ -102,35 +103,5 @@ class PriorityOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
     _validReverseCache = false;
     _backingSet.clear();
     _length = 0;
-  }
-}
-
-class _PriorityOrderedSetIterator<K extends Comparable<K>, E>
-    implements Iterator<E> {
-  final Iterator<Set<E>> _iterator;
-  Iterator<E>? _innerIterator;
-
-  _PriorityOrderedSetIterator(PriorityOrderedSet<K, E> orderedSet)
-      : _iterator = orderedSet._backingSet.values.iterator;
-
-  @override
-  E get current => _innerIterator!.current;
-
-  @pragma('vm:prefer-inline')
-  @pragma('wasm:prefer-inline')
-  @override
-  bool moveNext() {
-    if (_innerIterator?.moveNext() != true) {
-      final result = _iterator.moveNext();
-
-      if (!result) {
-        return false;
-      }
-
-      _innerIterator = _iterator.current.iterator;
-      _innerIterator!.moveNext();
-      return true;
-    }
-    return true;
   }
 }

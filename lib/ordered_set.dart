@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:ordered_set/comparing_ordered_set.dart';
-import 'package:ordered_set/priority_ordered_set.dart';
+import 'package:ordered_set/mapping_ordered_set.dart';
 import 'package:ordered_set/queryable_ordered_set.dart';
 
 /// A simple interface of an ordered set for Dart.
@@ -60,7 +60,7 @@ abstract class OrderedSet<E> extends IterableMixin<E> {
   ///
   ///     set.removeWhere((a) => a == e);
   ///
-  /// Note: when using the [PriorityOrderedSet] implementation, this will only
+  /// Note: when using the [MappingOrderedSet] implementation, this will only
   /// work if the element's priority hasn't changed since last rebalance.
   bool remove(E e);
 
@@ -92,28 +92,28 @@ abstract class OrderedSet<E> extends IterableMixin<E> {
     return ComparingOrderedSet<E>(compare);
   }
 
-  /// Creates an instance of [OrderedSet] using the [PriorityOrderedSet]
-  /// implementation and the provided [priority] mapping function.
-  static PriorityOrderedSet<K, E> mapping<K extends Comparable<K>, E>(
-    K Function(E a) priority,
+  /// Creates an instance of [OrderedSet] using the [MappingOrderedSet]
+  /// implementation and the provided [mappingFunction].
+  static MappingOrderedSet<K, E> mapping<K extends Comparable<K>, E>(
+    K Function(E a) mappingFunction,
   ) {
-    return PriorityOrderedSet(priority);
+    return MappingOrderedSet(mappingFunction);
   }
 
   /// Creates an instance of [OrderedSet] for items that are already
-  /// [Comparable] using the [PriorityOrderedSet] implementation.
+  /// [Comparable] using the [MappingOrderedSet] implementation.
   /// Use this for classes that implement [Comparable] of a different class.
   /// Equivalent to `mapping<K, E>((a) => a)`.
-  static PriorityOrderedSet<K, E>
+  static MappingOrderedSet<K, E>
       comparable<K extends Comparable<K>, E extends K>() {
     return mapping<K, E>((a) => a);
   }
 
   /// Creates an instance of [OrderedSet] for items that are already
-  /// [Comparable] of themselves, using the [PriorityOrderedSet] implementation.
+  /// [Comparable] of themselves, using the [MappingOrderedSet] implementation.
   /// Use this for classes that implement [Comparable] of themselves.
   /// Equivalent to `mapping<K, K>((a) => a)`.
-  static PriorityOrderedSet<E, E> simple<E extends Comparable<E>>() {
+  static MappingOrderedSet<E, E> simple<E extends Comparable<E>>() {
     return comparable<E, E>();
   }
 
