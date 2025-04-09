@@ -6,11 +6,15 @@
 
 A simple implementation for an Ordered Set for Dart.
 
-It accepts either a comparator function that compares items for their priority or a mapper function that maps items to their priority.
+It accepts either a comparator function that compares items for their priority or a mapper function
+that maps items to their priority.
 
-Unlike Dart's [SplayTreeSet](https://api.dart.dev/dart-collection/SplayTreeSet-class.html) or [SplayTreeMap](https://api.dart.dev/dart-collection/SplayTreeMap-class.html) classes, it allows for several different elements with the same "priority" to be added.
+Unlike Dart's [SplayTreeSet](https://api.dart.dev/dart-collection/SplayTreeSet-class.html) or
+[SplayTreeMap](https://api.dart.dev/dart-collection/SplayTreeMap-class.html) classes, it allows for
+several different elements with the same "priority" to be added.
 
-It also implements [Iterable](https://api.dart.dev/dart-core/Iterable-class.html), allowing you to iterate the contents (in order) in O(n) (no additional overhead).
+It also implements [Iterable](https://api.dart.dev/dart-core/Iterable-class.html), allowing you to
+iterate the contents (in order) in O(n) (no additional overhead).
 
 ## Usage
 
@@ -67,18 +71,29 @@ Note that you could instead just create a `MappingOrderedSet` instead:
 
 There are three main implementations of the `OrderedSet` interface:
 
-* `ComparingOrderedSet`: the simplest implementation, takes in a `Comparator` and does not cache priorities. It uses Dart's `SplayTreeSet` as a backing implementation.
-* `MappingOrderedSet`: a slightly more advanced implementation that takes in a mapper function (maps elements to their priorities) and caches them. It uses Dart's `SplayTreeMap` as a backing implementation.
-* `QueryableOrderedSet`: a simple wrapper over either `OrderedSet` that allows for O(1) type queries; if you find yourself doing `.whereType<T>()` a lot, you should consider using this.
+* `ComparingOrderedSet`: the simplest implementation, takes in a `Comparator` and does not cache
+   priorities. It uses Dart's `SplayTreeSet` as a backing implementation.
+* `MappingOrderedSet`: a slightly more advanced implementation that takes in a mapper function
+   (maps elements to their priorities) and caches them. It uses Dart's `SplayTreeMap` as a backing
+   implementation.
+* `QueryableOrderedSet`: a simple wrapper over either `OrderedSet` that allows for O(1) type
+   queries; if you find yourself doing `.whereType<T>()` a lot, you should consider using this.
 
-In order to create an `OrderedSet`, however, you can just use the static methods on the interface itself:
+In order to create an `OrderedSet`, however, you can just use the static methods on the interface
+itself:
 
-* `comparing<E>([comparator])`: creates a `ComparingOrderedSet` with the given `Comparator`.
-* `mapping<K, E>([mapper])`: creates a `MappingOrderedSet` with the given mapper function.
-* `comparable<K, E>()`: if `E extends Comparable<K>`, this is a simpler way of creating a `MappingOrderedSet` with identity mapping.
-* `simple<E>()`: if `E extends Comparable<E>`, this is an even simpler way of creating a `MappingOrderedSet` with identity mapping.
-* `queryable<E>(orderedSet)`: wraps the given `OrderedSet` into a `QueryableOrderedSet`.
+* `OrderedSet.comparing<E>([comparator])`: creates a `ComparingOrderedSet` with the given
+  `Comparator`.
+* `OrderedSet.mapping<K, E>([mapper])`: creates a `MappingOrderedSet` with the given mapper
+  function.
+* `OrderedSet.comparable<K, E>()`: if `E extends Comparable<K>`, this is a simpler way of creating
+  a `MappingOrderedSet` with identity mapping.
+* `OrderedSet.simple<E>()`: if `E extends Comparable<E>`, this is an even simpler way of creating
+  a `MappingOrderedSet` with identity mapping.
+* `OrderedSet.queryable<E>(orderedSet)`: wraps the given `OrderedSet` into a `QueryableOrderedSet`.
 
 ## Contributing
 
-All contributions are very welcome! Please feel free to create Issues, help us with PR's or comment your suggestions, feature requests, bugs, et cetera. Give us a star if you liked it!
+All contributions are very welcome! Please feel free to create Issues, help us with PR's or comment
+your suggestions, feature requests, bugs, et cetera. Give us a star if you liked it!
+
