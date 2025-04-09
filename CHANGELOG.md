@@ -1,3 +1,7 @@
+## 7.0.0
+
+- Introduce new `PriorityOrderedSet` class and reorganize the package structure.
+
 ## 6.1.1
 
 - Fix bug if inner sub set is empty causing null pointer exception.
