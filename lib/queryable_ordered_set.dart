@@ -1,15 +1,5 @@
 import 'package:ordered_set/ordered_set.dart';
 
-class _CacheEntry<C, T> {
-  final List<C> data;
-
-  _CacheEntry({required this.data});
-
-  bool check(T t) {
-    return t is C;
-  }
-}
-
 /// This is an implementation of [OrderedSet] that allows you to more
 /// efficiently [query] the list.
 ///
@@ -31,18 +21,19 @@ class _CacheEntry<C, T> {
 ///
 /// Note that you can change [strictMode] to allow for querying for unregistered
 /// types; if you do so, the registration cost is payed on the first query.
-class QueryableOrderedSet<T> extends OrderedSet<T> {
+class QueryableOrderedSet<E> extends OrderedSet<E> {
   /// Controls whether running an unregistered query throws an error or
   /// performs just-in-time filtering.
   final bool strictMode;
-  final Map<Type, _CacheEntry<T, T>> _cache = {};
+  final Map<Type, _CacheEntry<E, E>> _cache = {};
+  final OrderedSet<E> _backingSet;
 
-  QueryableOrderedSet({
-    int Function(T e1, T e2)? comparator,
+  QueryableOrderedSet(
+    this._backingSet, {
     this.strictMode = true,
-  }) : super(comparator);
+  });
 
-  /// Adds a new cache for a subtype [C] of [T], allowing you to call [query].
+  /// Adds a new cache for a subtype [C] of [E], allowing you to call [query].
   /// If the cache already exists this operation is a no-op.
   ///
   /// If the set is not empty, the current elements will be re-sorted.
@@ -50,11 +41,11 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
   /// It is recommended to [register] all desired types at the beginning of
   /// your application to avoid recomputing the existing elements upon
   /// registration.
-  void register<C extends T>() {
+  void register<C extends E>() {
     if (isRegistered<C>()) {
       return;
     }
-    _cache[C] = _CacheEntry<C, T>(
+    _cache[C] = _CacheEntry<C, E>(
       data: _filter<C>(),
     );
   }
@@ -70,7 +61,7 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
   ///
   /// Note: you *must* call [register] for every type [C] you desire to use
   /// before calling this, or set [strictMode] to false.
-  Iterable<C> query<C extends T>() {
+  Iterable<C> query<C extends E>() {
     final result = _cache[C];
     if (result == null) {
       if (strictMode) {
@@ -105,8 +96,27 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
   bool isRegistered<C>() => _cache.containsKey(C);
 
   @override
-  bool add(T t) {
-    if (super.add(t)) {
+  int get length => _backingSet.length;
+
+  @override
+  Iterator<E> get iterator => _backingSet.iterator;
+
+  @override
+  Iterable<E> reversed() => _backingSet.reversed();
+
+  @override
+  void rebalanceAll() {
+    _backingSet.rebalanceAll();
+  }
+
+  @override
+  void rebalanceWhere(bool Function(E element) test) {
+    _backingSet.rebalanceWhere(test);
+  }
+
+  @override
+  bool add(E t) {
+    if (_backingSet.add(t)) {
       _cache.forEach((key, value) {
         if (value.check(t)) {
           value.data.add(t);
@@ -118,16 +128,26 @@ class QueryableOrderedSet<T> extends OrderedSet<T> {
   }
 
   @override
-  bool remove(T e) {
+  bool remove(E e) {
     _cache.values.forEach((v) => v.data.remove(e));
-    return super.remove(e);
+    return _backingSet.remove(e);
   }
 
   @override
   void clear() {
     _cache.values.forEach((v) => v.data.clear());
-    super.clear();
+    _backingSet.clear();
   }
 
-  List<C> _filter<C extends T>() => whereType<C>().toList();
+  List<C> _filter<C extends E>() => whereType<C>().toList();
+}
+
+class _CacheEntry<C, T> {
+  final List<C> data;
+
+  _CacheEntry({required this.data});
+
+  bool check(T t) {
+    return t is C;
+  }
 }
