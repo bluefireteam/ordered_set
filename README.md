@@ -67,17 +67,15 @@ Note that you could instead just create a `MappingOrderedSet` instead:
   // ...
 ```
 
-## Mapping vs Comparing vs Queryable
+## Mapping vs Comparing
 
-There are three main implementations of the `OrderedSet` interface:
+There are two main implementations of the `OrderedSet` interface:
 
 * `ComparingOrderedSet`: the simplest implementation, takes in a `Comparator` and does not cache
    priorities. It uses Dart's `SplayTreeSet` as a backing implementation.
 * `MappingOrderedSet`: a slightly more advanced implementation that takes in a mapper function
    (maps elements to their priorities) and caches them. It uses Dart's `SplayTreeMap` as a backing
    implementation.
-* `QueryableOrderedSet`: a simple wrapper over either `OrderedSet` that allows for O(1) type
-   queries; if you find yourself doing `.whereType<T>()` a lot, you should consider using this.
 
 In order to create an `OrderedSet`, however, you can just use the static methods on the interface
 itself:
@@ -90,7 +88,19 @@ itself:
   a `MappingOrderedSet` with identity mapping.
 * `OrderedSet.simple<E>()`: if `E extends Comparable<E>`, this is an even simpler way of creating
   a `MappingOrderedSet` with identity mapping.
-* `OrderedSet.queryable<E>(orderedSet)`: wraps the given `OrderedSet` into a `QueryableOrderedSet`.
+
+## Querying
+
+You can [register] a set of queries, i.e., predefined sub-types, whose results, 
+i.e., subsets of this set, are then cached.
+Since the queries have to be type checks, and types are runtime constants, this
+can be vastly optimized.
+
+You can then filter by type by using the [query] method (or using [whereType];
+which is overridden).
+
+Note that you can change [strictMode] to allow for querying for unregistered
+types; if you do so, the registration cost is payed on the first query.
 
 ## Contributing
 

@@ -8,16 +8,8 @@ import 'package:ordered_set/ordered_set.dart';
 /// have to be type checks, and types are runtime constants, this can be
 /// vastly optimized.
 ///
-/// If you find yourself doing a lot of:
-///
-/// ```dart
-///   orderedSet.whereType<Foo>()
-/// ```
-///
-/// On your code, and are concerned you are iterating a very long O(n) list to
-/// find a handful of elements, specially if this is done every tick, you
-/// can use this class, that pays a small O(number of registers) cost on [add],
-/// but lets you find (specific) subsets at O(0).
+/// You can then filter by type by using the [query] method (or using
+/// [whereType]; which is overridden).
 ///
 /// Note that you can change [strictMode] to allow for querying for unregistered
 /// types; if you do so, the registration cost is payed on the first query.
