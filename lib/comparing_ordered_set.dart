@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:ordered_set/mapping_ordered_set.dart';
 import 'package:ordered_set/ordered_set.dart';
 import 'package:ordered_set/ordered_set_iterator.dart';
+import 'package:ordered_set/queryable_ordered_set_impl.dart';
 
 /// A simple implementation of [OrderedSet] that uses a [SplayTreeSet] as the
 /// backing store.
@@ -10,7 +11,8 @@ import 'package:ordered_set/ordered_set_iterator.dart';
 /// This does not store the elements priorities, so it is susceptible to race
 /// conditions if priorities are changed while iterating.
 /// For a safer implementation, use [MappingOrderedSet].
-class ComparingOrderedSet<E> extends OrderedSet<E> {
+class ComparingOrderedSet<E> extends OrderedSet<E>
+    with QueryableOrderedSetImpl<E> {
   // If the default implementation of `Set` changes from `LinkedHashSet` to
   // something else that isn't ordered we'll have to change this to explicitly
   // be `LinkedHashSet` (or some other data structure that preserves order).
@@ -19,6 +21,9 @@ class ComparingOrderedSet<E> extends OrderedSet<E> {
 
   bool _validReverseCache = true;
   Iterable<E> _reverseCache = const Iterable.empty();
+
+  @override
+  final bool strictMode;
 
   // Copied from SplayTreeSet, but those are private there
   static int _dynamicCompare(dynamic a, dynamic b) => Comparable.compare(
@@ -37,7 +42,10 @@ class ComparingOrderedSet<E> extends OrderedSet<E> {
   ///
   /// If the [compare] function is omitted, it defaults to [Comparable.compare],
   /// and the elements must be comparable.
-  ComparingOrderedSet([int Function(E e1, E e2)? compare]) {
+  ComparingOrderedSet({
+    int Function(E e1, E e2)? compare,
+    this.strictMode = true,
+  }) {
     final comparator = compare ?? _defaultCompare<E>();
     _backingSet = SplayTreeSet<LinkedHashSet<E>>((Set<E> l1, Set<E> l2) {
       if (l1.isEmpty) {
@@ -81,6 +89,7 @@ class ComparingOrderedSet<E> extends OrderedSet<E> {
     if (added) {
       _length++;
       _validReverseCache = false;
+      onAdd(e);
     }
     return added;
   }
@@ -122,6 +131,7 @@ class ComparingOrderedSet<E> extends OrderedSet<E> {
       // If the removal resulted in an empty bucket, remove the bucket as well.
       _backingSet.remove(<E>{});
       _validReverseCache = false;
+      onRemove(e);
     }
     return result;
   }
@@ -131,5 +141,6 @@ class ComparingOrderedSet<E> extends OrderedSet<E> {
     _validReverseCache = false;
     _backingSet.clear();
     _length = 0;
+    onClear();
   }
 }

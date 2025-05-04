@@ -118,12 +118,14 @@ void main() {
       });
 
       test('with repeated priority elements', () {
-        final a = OrderedSet.comparing<int>((a, b) => (a % 2) - (b % 2));
+        final a = OrderedSet.comparing<int>(
+          compare: (a, b) => (a % 2) - (b % 2),
+        );
         expect(a.addAll([7, 4, 3, 1, 2, 6, 5]), 7);
         expect(a.length, 7);
         expect(a.toList().join(), '4267315');
 
-        final b = OrderedSet.comparing<int>((a, b) => 0);
+        final b = OrderedSet.comparing<int>(compare: (a, b) => 0);
         expect(b.addAll([7, 4, 3, 1, 2, 6, 5]), 7);
         expect(a.length, 7);
         expect(b.toList().join(), '7431265');
@@ -174,7 +176,9 @@ void main() {
       });
 
       test('keeps track of length when removing', () {
-        final a = OrderedSet.comparing<int>((a, b) => 0); // no priority
+        final a = OrderedSet.comparing<int>(
+          compare: (a, b) => 0, // no priority
+        );
         expect(a.addAll([1, 2, 3, 4]), 4);
         expect(a.length, 4);
 
@@ -223,7 +227,7 @@ void main() {
 
       test('test with custom comparator', () {
         final a = OrderedSet.comparing<ComparableObject>(
-          (a, b) => a.name.compareTo(b.name),
+          compare: (a, b) => a.name.compareTo(b.name),
         );
         expect(a.add(ComparableObject(1, 'Sunny')), isTrue);
         expect(a.add(ComparableObject(12, 'Klaus')), isTrue);
@@ -235,7 +239,9 @@ void main() {
       test(
         'test items with repeated comparables, maintain insertion order',
         () {
-          final a = OrderedSet.comparing<int>((a, b) => (a % 2) - (b % 2));
+          final a = OrderedSet.comparing<int>(
+            compare: (a, b) => (a % 2) - (b % 2),
+          );
           for (var i = 0; i < 10; i++) {
             expect(a.add(i), isTrue);
           }
@@ -275,7 +281,7 @@ void main() {
 
       test('with custom comparator, repeated items and removal', () {
         final a = OrderedSet.comparing<ComparableObject>(
-          (a, b) => -a.priority.compareTo(b.priority),
+          compare: (a, b) => -a.priority.compareTo(b.priority),
         );
         final a1 = ComparableObject(2, '1');
         final a2 = ComparableObject(2, '2');
@@ -321,7 +327,7 @@ void main() {
 
       test('removeAll', () {
         final orderedSet = OrderedSet.comparing<ComparableObject>(
-          Comparing.on((e) => e.priority),
+          compare: Comparing.on((e) => e.priority),
         );
 
         final a = ComparableObject(0, 'a');
@@ -361,7 +367,7 @@ void main() {
     group('rebalancing', () {
       test('rebalanceWhere and rebalanceAll', () {
         final orderedSet = OrderedSet.comparing<ComparableObject>(
-          Comparing.on((e) => e.priority),
+          compare: Comparing.on((e) => e.priority),
         );
 
         final a = ComparableObject(0, 'a');
@@ -388,7 +394,7 @@ void main() {
     group('reversed', () {
       test('reversed properly invalidates cache', () {
         final orderedSet = OrderedSet.comparing<ComparableObject>(
-          Comparing.on((e) => e.priority),
+          compare: Comparing.on((e) => e.priority),
         );
 
         final a = ComparableObject(0, 'a');

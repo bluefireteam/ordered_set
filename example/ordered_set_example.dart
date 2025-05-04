@@ -9,7 +9,7 @@ void main() {
   items.add(1);
   print(items.toList()); // [1, 2]
 
-  final a = OrderedSet.comparing<Person>((a, b) => a.age - b.age);
+  final a = OrderedSet.comparing<Person>(compare: (a, b) => a.age - b.age);
   a.add(Person(12, 'Klaus'));
   a.add(Person(1, 'Sunny'));
   a.add(Person(14, 'Violet'));
@@ -25,7 +25,7 @@ void main() {
   // use Comparing for simpler creation:
   // sort by age desc and then name asc
   final b = OrderedSet.comparing<Person>(
-    Comparing.join([(p) => -p.age, (p) => p.name]),
+    compare: Comparing.join([(p) => -p.age, (p) => p.name]),
   );
   b.addAll(a.toList());
   print(b.toList().map((e) => e.name));
