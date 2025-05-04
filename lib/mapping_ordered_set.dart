@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:ordered_set/comparing_ordered_set.dart';
 import 'package:ordered_set/ordered_set.dart';
 import 'package:ordered_set/ordered_set_iterator.dart';
+import 'package:ordered_set/queryable_ordered_set_impl.dart';
 
 /// A simple implementation of [OrderedSet] that uses a [SplayTreeMap] as the
 /// backing store.
@@ -10,7 +11,8 @@ import 'package:ordered_set/ordered_set_iterator.dart';
 /// This allows it to keep a cache of elements priorities, so they can be used
 /// changed without rebalancing.
 /// For an alternative implementation, use [ComparingOrderedSet].
-class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
+class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E>
+    with QueryableOrderedSetImpl<E> {
   final K Function(E a) _mappingFunction;
   late SplayTreeMap<K, Set<E>> _backingSet;
   late int _length;
@@ -18,7 +20,10 @@ class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
   bool _validReverseCache = true;
   Iterable<E> _reverseCache = const Iterable.empty();
 
-  MappingOrderedSet(this._mappingFunction) {
+  @override
+  final bool strictMode;
+
+  MappingOrderedSet(this._mappingFunction, {this.strictMode = true}) {
     _backingSet = SplayTreeMap((K k1, K k2) {
       return k1.compareTo(k2);
     });
@@ -49,6 +54,7 @@ class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
     if (added) {
       _length++;
       _validReverseCache = false;
+      onAdd(e);
     }
     return added;
   }
@@ -94,6 +100,7 @@ class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
         _backingSet.remove(key);
       }
       _validReverseCache = false;
+      onRemove(e);
     }
     return result;
   }
@@ -103,5 +110,6 @@ class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E> {
     _validReverseCache = false;
     _backingSet.clear();
     _length = 0;
+    onClear();
   }
 }

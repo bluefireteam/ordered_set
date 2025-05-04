@@ -8,7 +8,7 @@ import 'types.dart';
 
 void main() {
   OrderedSet<K> comparing<K>(Mapper<K> mapper) {
-    return OrderedSet.comparing<K>(Comparing.on(mapper));
+    return OrderedSet.comparing<K>(compare: Comparing.on(mapper));
   }
 
   OrderedSet<K> priority<K>(Mapper<K> mapper) {

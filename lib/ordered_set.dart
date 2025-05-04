@@ -2,7 +2,7 @@ import 'dart:collection';
 
 import 'package:ordered_set/comparing_ordered_set.dart';
 import 'package:ordered_set/mapping_ordered_set.dart';
-import 'package:ordered_set/queryable_ordered_set.dart';
+import 'package:ordered_set/read_only_ordered_set.dart';
 
 /// A simple interface of an ordered set for Dart.
 ///
@@ -10,10 +10,7 @@ import 'package:ordered_set/queryable_ordered_set.dart';
 /// [SplayTreeSet], it allows for several different elements with the same
 /// priority to be added. It also implements [Iterable], so you can iterate it
 /// in O(n).
-abstract class OrderedSet<E> extends IterableMixin<E> {
-  /// The tree's elements in reversed order; should be cached when possible.
-  Iterable<E> reversed();
-
+abstract class OrderedSet<E> extends ReadOnlyOrderedSet<E> {
   /// Adds the element [e] to this, and returns whether the element was
   /// added or not. If the element already exists in the collection, it isn't
   /// added.
@@ -86,18 +83,20 @@ abstract class OrderedSet<E> extends IterableMixin<E> {
   ///
   /// This implementation will not store component priorities, so it is
   /// susceptible to race conditions if priorities are changed while iterating.
-  static ComparingOrderedSet<E> comparing<E>([
+  static ComparingOrderedSet<E> comparing<E>({
     int Function(E a, E b)? compare,
-  ]) {
-    return ComparingOrderedSet<E>(compare);
+    bool strictMode = true,
+  }) {
+    return ComparingOrderedSet<E>(compare: compare, strictMode: strictMode);
   }
 
   /// Creates an instance of [OrderedSet] using the [MappingOrderedSet]
   /// implementation and the provided [mappingFunction].
   static MappingOrderedSet<K, E> mapping<K extends Comparable<K>, E>(
-    K Function(E a) mappingFunction,
-  ) {
-    return MappingOrderedSet(mappingFunction);
+    K Function(E a) mappingFunction, {
+    bool strictMode = true,
+  }) {
+    return MappingOrderedSet(mappingFunction, strictMode: strictMode);
   }
 
   /// Creates an instance of [OrderedSet] for items that are already
@@ -105,24 +104,19 @@ abstract class OrderedSet<E> extends IterableMixin<E> {
   /// Use this for classes that implement [Comparable] of a different class.
   /// Equivalent to `mapping<K, E>((a) => a)`.
   static MappingOrderedSet<K, E>
-      comparable<K extends Comparable<K>, E extends K>() {
-    return mapping<K, E>((a) => a);
+      comparable<K extends Comparable<K>, E extends K>({
+    bool strictMode = true,
+  }) {
+    return mapping<K, E>((a) => a, strictMode: strictMode);
   }
 
   /// Creates an instance of [OrderedSet] for items that are already
   /// [Comparable] of themselves, using the [MappingOrderedSet] implementation.
   /// Use this for classes that implement [Comparable] of themselves.
   /// Equivalent to `mapping<K, K>((a) => a)`.
-  static MappingOrderedSet<E, E> simple<E extends Comparable<E>>() {
-    return comparable<E, E>();
-  }
-
-  /// Creates an instance of [OrderedSet] using the [QueryableOrderedSet]
-  /// by wrapping the provided [backingSet].
-  static QueryableOrderedSet<E> queryable<E>(
-    OrderedSet<E> backingSet, {
+  static MappingOrderedSet<E, E> simple<E extends Comparable<E>>({
     bool strictMode = true,
   }) {
-    return QueryableOrderedSet<E>(backingSet, strictMode: strictMode);
+    return comparable<E, E>(strictMode: strictMode);
   }
 }
