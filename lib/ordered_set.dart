@@ -64,12 +64,22 @@ abstract class OrderedSet<E> extends ReadOnlyOrderedSet<E> {
   /// Remove all elements that match the [test] condition; returns the removed
   /// elements.
   Iterable<E> removeWhere(bool Function(E element) test) {
-    return where(test).toList(growable: false)..forEach(remove);
+    final elements = where(test).toList(growable: false);
+    for (final element in elements) {
+      remove(element);
+    }
+    return elements;
   }
 
   /// Remove all [elements] and returns the removed elements.
   Iterable<E> removeAll(Iterable<E> elements) {
-    return elements.where(remove).toList(growable: false);
+    final removed = <E>[];
+    for (final element in elements) {
+      if (remove(element)) {
+        removed.add(element);
+      }
+    }
+    return removed;
   }
 
   /// Removes the element at [index].

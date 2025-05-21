@@ -22,7 +22,7 @@ mixin QueryableOrderedSetImpl<E> on OrderedSet<E> {
       return;
     }
     _cache[C] = _CacheEntry<C, E>(
-      data: _filter<C>(),
+      _filter<C>(),
     );
   }
 
@@ -62,19 +62,28 @@ mixin QueryableOrderedSetImpl<E> on OrderedSet<E> {
   bool isRegistered<C extends E>() => _cache.containsKey(C);
 
   void onAdd(E t) {
-    _cache.forEach((key, value) {
+    for (final entry in _cache.entries) {
+      final value = entry.value;
       if (value.check(t)) {
         value.data.add(t);
       }
-    });
+    }
   }
 
   void onRemove(E e) {
-    _cache.values.forEach((v) => v.data.remove(e));
+    for (final entry in _cache.entries) {
+      final value = entry.value;
+      if (value.check(e)) {
+        value.data.remove(e);
+      }
+    }
   }
 
   void onClear() {
-    _cache.values.forEach((v) => v.data.clear());
+    for (final entry in _cache.entries) {
+      final value = entry.value;
+      value.data.clear();
+    }
   }
 
   List<C> _filter<C extends E>() => whereType<C>().toList();
@@ -83,7 +92,7 @@ mixin QueryableOrderedSetImpl<E> on OrderedSet<E> {
 class _CacheEntry<C, T> {
   final List<C> data;
 
-  _CacheEntry({required this.data});
+  _CacheEntry(this.data);
 
   bool check(T t) {
     return t is C;
