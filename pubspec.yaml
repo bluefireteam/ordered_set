@@ -1,6 +1,6 @@
 name: ordered_set
 description: A simple implementation of an Ordered Set for Dart that allows multiple items with the same priority.
-version: 7.0.0
+version: 8.0.0
 homepage: https://github.com/bluefireteam/ordered_set
 funding:
   - https://opencollective.com/blue-fire
