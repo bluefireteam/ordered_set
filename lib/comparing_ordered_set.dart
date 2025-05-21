@@ -78,6 +78,8 @@ class ComparingOrderedSet<E> extends OrderedSet<E>
     return _reverseCache;
   }
 
+  @pragma('vm:prefer-inline')
+  @pragma('wasm:prefer-inline')
   @override
   bool add(E e) {
     final elementSet = {e};
@@ -107,6 +109,8 @@ class ComparingOrderedSet<E> extends OrderedSet<E>
     addAll(elements);
   }
 
+  @pragma('vm:prefer-inline')
+  @pragma('wasm:prefer-inline')
   @override
   bool remove(E e) {
     var bucket = _backingSet.lookup({e});
