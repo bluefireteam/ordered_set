@@ -91,19 +91,16 @@ itself:
 
 ## Querying
 
-You can [register] a set of queries, i.e., predefined sub-types, whose results, 
-i.e., subsets of this set, are then cached.
-Since the queries have to be type checks, and types are runtime constants, this
-can be vastly optimized.
+You can [register] a set of queries, i.e., predefined sub-types, whose results, i.e., subsets of
+this set, are then cached. Since the queries have to be type checks, and types are runtime
+constants, this can be vastly optimized.
 
-You can then filter by type by using the [query] method (or using [whereType];
-which is overridden).
+You can then filter by type by using the [query] method (or using [whereType]; which is overridden).
 
-Note that you can change [strictMode] to allow for querying for unregistered
-types; if you do so, the registration cost is payed on the first query.
+Note that you can change [strictMode] to allow for querying for unregistered types; if you do so,
+the registration cost is payed on the first query.
 
 ## Contributing
 
 All contributions are very welcome! Please feel free to create Issues, help us with PR's or comment
 your suggestions, feature requests, bugs, et cetera. Give us a star if you liked it!
-
