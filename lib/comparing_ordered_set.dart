@@ -16,8 +16,11 @@ class ComparingOrderedSet<E> extends OrderedSet<E>
   // If the default implementation of `Set` changes from `LinkedHashSet` to
   // something else that isn't ordered we'll have to change this to explicitly
   // be `LinkedHashSet` (or some other data structure that preserves order).
-  late SplayTreeSet<Set<E>> _backingSet;
-  late int _length;
+  late final SplayTreeSet<Set<E>> _backingSet = SplayTreeSet<LinkedHashSet<E>>(
+    _outerComparator,
+  );
+  final int Function(E e1, E e2) _comparator;
+  int _length = 0;
 
   bool _validReverseCache = true;
   Iterable<E> _reverseCache = const Iterable.empty();
@@ -45,22 +48,7 @@ class ComparingOrderedSet<E> extends OrderedSet<E>
   ComparingOrderedSet({
     int Function(E e1, E e2)? compare,
     this.strictMode = true,
-  }) {
-    final comparator = compare ?? _defaultCompare<E>();
-    _backingSet = SplayTreeSet<LinkedHashSet<E>>((Set<E> l1, Set<E> l2) {
-      if (l1.isEmpty) {
-        if (l2.isEmpty) {
-          return 0;
-        }
-        return -1;
-      }
-      if (l2.isEmpty) {
-        return 1;
-      }
-      return comparator(l1.first, l2.first);
-    });
-    _length = 0;
-  }
+  }) : _comparator = compare ?? _defaultCompare<E>();
 
   @override
   int get length => _length;
@@ -142,5 +130,18 @@ class ComparingOrderedSet<E> extends OrderedSet<E>
     _backingSet.clear();
     _length = 0;
     onClear();
+  }
+
+  int _outerComparator(Set<E> l1, Set<E> l2) {
+    if (l1.isEmpty) {
+      if (l2.isEmpty) {
+        return 0;
+      }
+      return -1;
+    }
+    if (l2.isEmpty) {
+      return 1;
+    }
+    return _comparator(l1.first, l2.first);
   }
 }

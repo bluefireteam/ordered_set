@@ -14,8 +14,8 @@ import 'package:ordered_set/queryable_ordered_set_impl.dart';
 class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E>
     with QueryableOrderedSetImpl<E> {
   final K Function(E a) _mappingFunction;
-  late SplayTreeMap<K, Set<E>> _backingSet;
-  late int _length;
+  final SplayTreeMap<K, Set<E>> _backingSet;
+  int _length = 0;
 
   bool _validReverseCache = true;
   Iterable<E> _reverseCache = const Iterable.empty();
@@ -23,12 +23,10 @@ class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E>
   @override
   final bool strictMode;
 
-  MappingOrderedSet(this._mappingFunction, {this.strictMode = true}) {
-    _backingSet = SplayTreeMap((K k1, K k2) {
-      return k1.compareTo(k2);
-    });
-    _length = 0;
-  }
+  MappingOrderedSet(
+    this._mappingFunction, {
+    this.strictMode = true,
+  }) : _backingSet = SplayTreeMap((K k1, K k2) => k1.compareTo(k2));
 
   @override
   int get length => _length;
