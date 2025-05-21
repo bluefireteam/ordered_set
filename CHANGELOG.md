@@ -1,3 +1,7 @@
+## 8.0.0
+
+- Introduce new `ReadOnlyOrderedSet` super-interface
+
 ## 7.0.0
 
 - Introduce new `PriorityOrderedSet` class and reorganize the package structure.
