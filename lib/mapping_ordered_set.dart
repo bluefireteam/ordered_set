@@ -44,8 +44,6 @@ class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E>
     return _reverseCache;
   }
 
-  @pragma('vm:prefer-inline')
-  @pragma('wasm:prefer-inline')
   @override
   bool add(E e) {
     final elementPriority = _mappingFunction(e);
@@ -72,8 +70,6 @@ class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E>
     addAll(elements);
   }
 
-  @pragma('vm:prefer-inline')
-  @pragma('wasm:prefer-inline')
   @override
   bool remove(E e) {
     K? key = _mappingFunction(e);
