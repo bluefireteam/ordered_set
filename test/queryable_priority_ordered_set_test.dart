@@ -1,5 +1,4 @@
 import 'package:ordered_set/ordered_set.dart';
-import 'package:ordered_set/queryable_ordered_set.dart';
 import 'package:test/test.dart';
 
 abstract class Animal {
@@ -290,11 +289,11 @@ void main() {
   });
 }
 
-QueryableOrderedSet<Animal> _create({
+OrderedSet<Animal> _create({
   bool strictMode = true,
 }) {
-  return OrderedSet.queryable(
-    OrderedSet.mapping<String, Animal>((e) => e.name),
+  return OrderedSet.mapping<String, Animal>(
+    (e) => e.name,
     strictMode: strictMode,
   );
 }

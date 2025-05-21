@@ -1,6 +1,5 @@
 import 'package:ordered_set/comparing.dart';
 import 'package:ordered_set/ordered_set.dart';
-import 'package:ordered_set/queryable_ordered_set.dart';
 import 'package:test/test.dart';
 
 abstract class Animal {
@@ -291,13 +290,11 @@ void main() {
   });
 }
 
-QueryableOrderedSet<Animal> _create({
+OrderedSet<Animal> _create({
   bool strictMode = true,
 }) {
-  return OrderedSet.queryable(
-    OrderedSet.comparing<Animal>(
-      Comparing.on((e) => e.name),
-    ),
+  return OrderedSet.comparing<Animal>(
+    compare: Comparing.on((e) => e.name),
     strictMode: strictMode,
   );
 }

@@ -12,11 +12,11 @@ topics:
   - ordered-set
 
 environment:
-  sdk: '>=3.4.0 <4.0.0'
+  sdk: '>=3.6.0 <4.0.0'
 
 dev_dependencies:
-  benchmark_harness: ^2.2.2
-  coverage: ^1.8.0
-  dartdoc: ^8.0.9+1
-  flame_lint: ^1.2.0
-  test: ^1.25.7
+  benchmark_harness: ^2.3.1
+  coverage: ^1.13.1
+  dartdoc: ^8.3.3
+  flame_lint: ^1.3.0
+  test: ^1.26.2
