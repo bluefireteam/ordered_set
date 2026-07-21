@@ -40,6 +40,7 @@ class MappingOrderedSet<K extends Comparable<K>, E> extends OrderedSet<E>
   Iterable<E> reversed() {
     if (!_validReverseCache) {
       _reverseCache = toList(growable: false).reversed;
+      _validReverseCache = true;
     }
     return _reverseCache;
   }

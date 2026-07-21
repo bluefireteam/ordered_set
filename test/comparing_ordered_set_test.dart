@@ -425,6 +425,25 @@ void main() {
         orderedSet.addAll([a, b]);
         expect(orderedSet.reversed().join(), 'badc');
       });
+
+      test('reversed result is cached between calls without mutations', () {
+        final orderedSet = OrderedSet.comparing<ComparableObject>(
+          compare: Comparing.on((e) => e.priority),
+        );
+        orderedSet.addAll([
+          ComparableObject(0, 'a'),
+          ComparableObject(1, 'b'),
+        ]);
+
+        final firstCall = orderedSet.reversed();
+        expect(identical(firstCall, orderedSet.reversed()), isTrue);
+
+        orderedSet.add(ComparableObject(2, 'c'));
+        final afterMutation = orderedSet.reversed();
+        expect(identical(firstCall, afterMutation), isFalse);
+        expect(afterMutation.join(), 'cba');
+        expect(identical(afterMutation, orderedSet.reversed()), isTrue);
+      });
     });
   });
 }
