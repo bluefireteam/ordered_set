@@ -1,3 +1,7 @@
+## 8.0.1
+
+- Mark the reversed() cache as valid after rebuilding it
+
 ## 8.0.0
 
 - Introduce new `ReadOnlyOrderedSet` super-interface
